@@ -1,0 +1,9 @@
+questionary
+torch
+tensorboard
+tqdm
+transformers
+miditoolkit
+python-ly
+pretty_midi
+validators

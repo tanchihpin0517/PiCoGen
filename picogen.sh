@@ -11,6 +11,5 @@
 
 conda run -n picogen --no-capture-output python -m picogen.infer \
   --config_file ./config/default.json \
-  --ckpt_file ./ckpt/default/models/model_00075000 \
   --vocab_file ./asset/vocab.json \
   $@

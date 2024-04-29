@@ -32,27 +32,27 @@ conda run -n picogen --no-capture-output pip install -r ./asset/requirements_pic
 
 ## Run
 Generate a piano cover from a youtube video or an audio file with the following command:
-```
+```sh
 ./picogen.sh \
-    --input_url_or_file [youtube url or input audio file] \
-    --output_dir [output directory] \
+    --input_url_or_file "[youtube url or input audio file]" \
+    --output_dir "[output directory]" \
 ```
 If you have extracted leadsheets with SheetSage, you can specify the leadsheet directory (named with an UUID by default):
-```
+```sh
 ./picogen.sh \
-    --leadsheet_dir [SheetSage's output directory] \
-    --output_dir [output directory] \
+    --leadsheet_dir "[SheetSage output directory]" \
+    --output_dir "[output directory]" \
 ```
 
 
 ## Train PiCoGen
 
 ### Download Dataset
-```
+```sh
 git clone https://github.com/tanchihpin0517/dataset-pop1k7.git data/pop1k7
 ```
 
 ### Train
-```
+```sh
 ./train.sh --batch_size 4
 ```

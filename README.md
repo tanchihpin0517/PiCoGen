@@ -29,6 +29,7 @@ conda run -n picogen --no-capture-output pip install -r ./asset/requirements_pic
 ```
 
 ### Download Pretrained Model
+TODO: Provide a link to download the pretrained model.
 
 ## Run
 Generate a piano cover from a youtube video or an audio file with the following command:
@@ -36,12 +37,14 @@ Generate a piano cover from a youtube video or an audio file with the following 
 ./picogen.sh \
     --input_url_or_file "[youtube url or input audio file]" \
     --output_dir "[output directory]" \
+    --ckpt_file "[pretrained model]"
 ```
 If you have extracted leadsheets with SheetSage, you can specify the leadsheet directory (named with an UUID by default):
 ```sh
 ./picogen.sh \
     --leadsheet_dir "[SheetSage output directory]" \
     --output_dir "[output directory]" \
+    --ckpt_file "[pretrained model]"
 ```
 
 

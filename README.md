@@ -4,12 +4,14 @@
 ### SheetSage
 Clone [SheetSage](https://github.com/chrisdonahue/sheetsage) into the root directory of this project.
 ```
+git clone https://github.com/chrisdonahue/sheetsage.git
+
 # Project root
-.
-├── ...
-├── picogen
-├── sheetsage
-├── ...
+# .
+# ├── ...
+# ├── picogen
+# ├── sheetsage
+# ├── ...
 ```
 We suggest to try SheetSage first to make sure the environment is set up correctly.
 ```sh

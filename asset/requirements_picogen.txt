@@ -7,3 +7,4 @@ miditoolkit
 python-ly
 pretty_midi
 validators
+yt-dlp

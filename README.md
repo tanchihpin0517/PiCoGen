@@ -31,7 +31,7 @@ conda run -n picogen --no-capture-output pip install -r ./asset/requirements_pic
 ```
 
 ### Download Pretrained Model
-TODO: Provide a link to download the pretrained model.
+Download the pretrained model from [here](https://zenodo.org/records/11649613/files/model_00075000?download=1).
 
 ## Run
 Generate a piano cover from a youtube video or an audio file with the following command:

@@ -25,7 +25,7 @@ def parse_args():
     parser.add_argument('--data_dir', type=Path, required=True)
     parser.add_argument('--vocab_file', type=Path, required=True)
     parser.add_argument('--training_epochs', default=1000, type=int)
-    parser.add_argument('--training_steps', default=150000, type=int)
+    parser.add_argument('--training_steps', default=100000, type=int)
     parser.add_argument('--batch_size', default=1, type=int)
     parser.add_argument('--checkpoint_interval', default=1000, type=int)
     parser.add_argument('--stdout_interval', default=1, type=int)

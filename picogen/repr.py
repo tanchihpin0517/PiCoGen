@@ -641,9 +641,9 @@ if __name__ == "__main__":
         print(vocab)
         print("vocab size:", vocab.len())
 
-        midi_vocab = gen_vocab_midi()
-        midi_vocab_file = ca.output_file.parent / (ca.output_file.stem + '_midi.json')
-        midi_vocab_file.write_text(json.dumps(midi_vocab, indent=2))
+        # midi_vocab = gen_vocab_midi()
+        # midi_vocab_file = ca.output_file.parent / (ca.output_file.stem + '_midi.json')
+        # midi_vocab_file.write_text(json.dumps(midi_vocab, indent=2))
     else:
         raise ValueError(f'Unknown command: {ca.command}')
 

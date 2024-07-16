@@ -32,6 +32,10 @@ conda run -n picogen --no-capture-output pip install -r ./asset/requirements_pic
 
 ### Download Pretrained Model
 Download the pretrained model from [here](https://zenodo.org/records/11649613/files/model_00075000?download=1).
+```sh
+mkdir ./ckpt
+wget https://zenodo.org/records/11649613/files/model_00075000?download=1 -O ./ckpt/model_00075000
+```
 
 ## Run
 Generate a piano cover from a youtube video or an audio file with the following command:
@@ -50,11 +54,18 @@ If you have extracted leadsheets with SheetSage, you can specify the leadsheet d
 ```
 
 
-## Train PiCoGen
+## Train
 
 ### Download Dataset
 ```sh
-git clone https://github.com/tanchihpin0517/dataset-pop1k7.git data/pop1k7
+mkdir ./data
+wget https://zenodo.org/records/11649613/files/pop1k7.zip\?download\=1 -O ./data/pop1k7.zip
+unzip -d ./data ./data/pop1k7.zip
+```
+
+### Generate necessary files
+```sh
+./prepare.sh
 ```
 
 ### Train

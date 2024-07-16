@@ -1,42 +1,43 @@
 import argparse
-import subprocess
-from pathlib import Path
 import shutil
+import subprocess
 import tempfile
+from pathlib import Path
+
 import ly.document
 import ly.music
-import pretty_midi as pm
 import numpy as np
+import pretty_midi as pm
 import torch
-import json
-import random
 import validators
 from tqdm import tqdm
 
-from .repr import Event, DEFAULT_BPM_BINS, LS_DEFAULT_VELOCITY
-from .utils import load_config, load_checkpoint, query_mkdir
 from .model import CPTransformer
-from .repr import Tokenizer
+from .repr import DEFAULT_BPM_BINS, LS_DEFAULT_VELOCITY, Event, Tokenizer
+from .utils import load_checkpoint, load_config, query_mkdir
 
-LEADSHEET_DIR_NAME = 'leadsheet'
+LEADSHEET_DIR_NAME = "leadsheet"
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_url_or_file', type=str)
-    parser.add_argument('--output_dir', type=Path, required=True)
-    parser.add_argument('--leadsheet_dir', type=Path)
+    parser.add_argument("--input_url_or_file", type=str)
+    parser.add_argument("--output_dir", type=Path, required=True)
+    parser.add_argument("--leadsheet_dir", type=Path)
 
-    parser.add_argument('--config_file', type=Path, required=True)
-    parser.add_argument('--ckpt_file', type=Path, required=True)
-    parser.add_argument('--vocab_file', type=Path, required=True)
+    parser.add_argument("--config_file", type=Path, required=True)
+    parser.add_argument("--ckpt_file", type=Path, required=True)
+    parser.add_argument("--vocab_file", type=Path, required=True)
 
     return parser.parse_args()
+
 
 def main():
     ca = parse_args()
     query_mkdir(ca.output_dir)
 
     run(ca)
+
 
 def run(ca):
     if ca.leadsheet_dir is None:
@@ -47,28 +48,32 @@ def run(ca):
     ca.leadsheet_dir = ca.output_dir / LEADSHEET_DIR_NAME
     gen_piano_cover(ca)
 
+
 def copy_leadsheet(ca):
     ls_dir = ca.output_dir / LEADSHEET_DIR_NAME
     ls_dir.mkdir(exist_ok=True)
-    for file in ca.leadsheet_dir.glob('*'):
+    for file in ca.leadsheet_dir.glob("*"):
         shutil.copy(file, ls_dir / file.name)
+
 
 def run_sheetsage(ca):
     if validators.url(ca.input_url_or_file):
         input_file = download_audio(ca.input_url_or_file, ca.output_dir)
     else:
-        input_file = ca.output_dir / 'song.mp3'
+        input_file = ca.output_dir / "song.mp3"
         shutil.copy(ca.input_url_or_file, input_file)
 
     extract_leadsheet(input_file, ca.output_dir)
 
+
 def download_audio(url, output_dir):
-    output_file = output_dir / 'song.mp3'
+    output_file = output_dir / "song.mp3"
     if output_file.exists():
         output_file.unlink()
     cmd = f"yt-dlp --extract-audio --audio-format mp3 {url} -o '{output_dir}/song.%(ext)s'"
     subprocess.run(cmd, shell=True, check=True)
     return output_file
+
 
 def extract_leadsheet(audio_file, output_dir):
     tmp_dir = tempfile.TemporaryDirectory()
@@ -81,21 +86,22 @@ def extract_leadsheet(audio_file, output_dir):
 
     ls_dir = output_dir / "leadsheet"
     ls_dir.mkdir(exist_ok=True)
-    for file in Path(tmp_dir.name).glob('*'):
+    for file in Path(tmp_dir.name).glob("*"):
         dst = ls_dir / file.name
         shutil.copy(file, dst)
+
 
 @torch.no_grad()
 def gen_piano_cover(ca):
     if torch.cuda.is_available():
-        device = torch.device('cuda:{:d}'.format(0))
+        device = torch.device("cuda:{:d}".format(0))
     else:
-        device = torch.device('cpu')
+        device = torch.device("cpu")
 
     hp = load_config(ca.config_file, verbose=True)
     model = CPTransformer(hp).to(device)
     state_dict = load_checkpoint(ca.ckpt_file, device)
-    model.load_state_dict(state_dict['model'])
+    model.load_state_dict(state_dict["model"])
     # print(model)
 
     model.eval()
@@ -105,21 +111,21 @@ def gen_piano_cover(ca):
     print(f"Lead Sheet: {ca.leadsheet_dir}")
 
     try:
-        ls_file = ca.leadsheet_dir / 'output.ly'
+        ls_file = ca.leadsheet_dir / "output.ly"
         bpm, _, chord_quals = get_tempo_and_cquals(ls_file)
         ls_events, beat_per_bar = get_cp_with_empty_chord(
-            ca.leadsheet_dir / 'output.midi',
+            ca.leadsheet_dir / "output.midi",
             tokenizer.beat_div,
             tempo=bpm,
-            cquals=chord_quals
+            cquals=chord_quals,
         )
     except ValueError as e:
         print(f"Error processing lead sheet of {ca.leadsheet_dir}: {e}")
         exit(1)
 
-    bos_event = Event(family='spec', spec='bos')
-    end_event = Event(family='spec', spec='se')
-    bar_src_event = Event(family='bar', bar='src')
+    bos_event = Event(family="spec", spec="bos")
+    end_event = Event(family="spec", spec="se")
+    bar_src_event = Event(family="bar", bar="src")
 
     ls_ids = [tokenizer.e2i(e) for e in ls_events]
     tgt_seg = [tokenizer.e2i(bos_event)]
@@ -133,14 +139,14 @@ def gen_piano_cover(ca):
     for ls_bar_start, ls_bar_end in bar_ranges:
         tgt_seg.extend(ls_ids[ls_bar_start:ls_bar_end])
         if ls_bar_start == 0:
-            tgt_seg.append(tokenizer.e2i(Event(family='spec', spec='ss')))
+            tgt_seg.append(tokenizer.e2i(Event(family="spec", spec="ss")))
 
         # # generate kv cache
         # input_ids = torch.LongTensor(tgt_seg)[None, :, :].to(device)
         # output_ids, past_kv = model.generate(input_ids, family_mask, last_past_kv)
         # last_past_kv = past_kv
 
-        bar_tgt_event = Event(family='bar', bar='tgt')
+        bar_tgt_event = Event(family="bar", bar="tgt")
         tgt_seg.append(tokenizer.e2i(bar_tgt_event))
 
         # tgt_events = [tokenizer.i2e(t) for t in tgt_seg]
@@ -168,7 +174,6 @@ def gen_piano_cover(ca):
             if len(out_events) > 10240:
                 break
 
-
             tgt_seg.append(out_id)
             # last_past_kv = past_kv
 
@@ -185,24 +190,26 @@ def gen_piano_cover(ca):
         out_events,
         beat_per_bar,
     ).dump(piano_output_file)
-    (ca.output_dir / 'cover.txt').write_text("\n".join([str(e) for e in out_events]))
+    (ca.output_dir / "cover.txt").write_text("\n".join([str(e) for e in out_events]))
+
 
 def _get_item_content(item):
-    return str(item).split('\'')[1].split('\'')[0]
+    return str(item).split("'")[1].split("'")[0]
+
 
 def get_tempo_and_cquals(lily_file):
     # midi_file = args.indir / 'output.midi'
-    doc= ly.music.document(ly.document.Document(lily_file.read_text()))
+    doc = ly.music.document(ly.document.Document(lily_file.read_text()))
 
     beat_per_bar = doc[1][1][0][0][2].numerator()
     ts_den = 1 / doc[1][1][0][0][2].fraction()
     assert ts_den == 4
 
-    tempo_dur = doc[1][1][0][0][3][0] # ly.music.items.Duration
-    tempo_num = doc[1][1][0][0][3][1] # ly.music.items.Number
+    tempo_dur = doc[1][1][0][0][3][0]  # ly.music.items.Duration
+    tempo_num = doc[1][1][0][0][3][1]  # ly.music.items.Number
     dur = int(_get_item_content(tempo_dur))
     assert dur == 4
-    bpm = int(tempo_num.value() * (1/4 / (1/dur)))
+    bpm = int(tempo_num.value() * (1 / 4 / (1 / dur)))
 
     chord_list = doc[1][0][0][2][0]
     chord_quals = []
@@ -211,8 +218,8 @@ def get_tempo_and_cquals(lily_file):
         "m7": "m7",
         "maj7": "M7",
         "7": "7",
-        'dim': 'o',
-        'sus4': 'sus4',
+        "dim": "o",
+        "sus4": "sus4",
     }
     for item in chord_list:
         if type(item) == ly.music.items.Note:
@@ -224,7 +231,8 @@ def get_tempo_and_cquals(lily_file):
 
     return bpm, beat_per_bar, chord_quals
 
-def get_cp_with_empty_chord(midi_file, beat_div, tempo = 120, cquals = []):
+
+def get_cp_with_empty_chord(midi_file, beat_div, tempo=120, cquals=[]):
     midi = pm.PrettyMIDI(str(midi_file))
     drum, chord, melody = midi.instruments
 
@@ -238,7 +246,7 @@ def get_cp_with_empty_chord(midi_file, beat_div, tempo = 120, cquals = []):
     subbeat_bins = []
     for n in drum.notes:
         for i in range(beat_div):
-            subbeat_bins.append(n.start + (n.end-n.start) / beat_div * i)
+            subbeat_bins.append(n.start + (n.end - n.start) / beat_div * i)
     subbeat_bins = np.array(subbeat_bins)
 
     melody_grid = [list() for _ in subbeat_bins]
@@ -247,7 +255,7 @@ def get_cp_with_empty_chord(midi_file, beat_div, tempo = 120, cquals = []):
     for note in melody.notes:
         onset = np.argmin(np.abs(subbeat_bins - note.start))
         offset = np.argmin(np.abs(subbeat_bins - note.end))
-        melody_grid[onset].append((note.pitch, note.velocity, offset-onset))
+        melody_grid[onset].append((note.pitch, note.velocity, offset - onset))
 
     for note in chord.notes:
         onset = np.argmin(np.abs(subbeat_bins - note.start))
@@ -258,62 +266,74 @@ def get_cp_with_empty_chord(midi_file, beat_div, tempo = 120, cquals = []):
     bpm = DEFAULT_BPM_BINS[np.argmin(np.abs(DEFAULT_BPM_BINS - tempo))]
 
     # events = [f'Tempo_{bpm}']
-    events = [Event(family='spec', spec='ss')]
+    events = [Event(family="spec", spec="ss")]
     subbeat_per_bar = beat_div * beat_per_bar
     root_map = {
-        0: 'A',
-        1: 'A#',
-        2: 'B',
-        3: 'C',
-        4: 'C#',
-        5: 'D',
-        6: 'D#',
-        7: 'E',
-        8: 'F',
-        9: 'F#',
-        10: 'G',
-        11: 'G#',
+        0: "A",
+        1: "A#",
+        2: "B",
+        3: "C",
+        4: "C#",
+        5: "D",
+        6: "D#",
+        7: "E",
+        8: "F",
+        9: "F#",
+        10: "G",
+        11: "G#",
     }
     count = 0
     for i in range(len(melody_grid)):
         if i % subbeat_per_bar == 0:
-            events.append(Event(family='bar', bar='src'))
+            events.append(Event(family="bar", bar="src"))
 
         if i == 0:
-            events.append(Event(family='metric', position=str(0), chord='N_N', tempo=bpm) )
+            events.append(
+                Event(family="metric", position=str(0), chord="N_N", tempo=bpm)
+            )
 
         if len(chord_note_grid[i]) > 0 or len(melody_grid[i]) > 0:
             # events.append(f'Beat_{i%subbeat_per_bar}')
             if i != 0:
-                events.append(Event(family='metric', position=i%subbeat_per_bar, chord='cont', tempo='cont') )
+                events.append(
+                    Event(
+                        family="metric",
+                        position=i % subbeat_per_bar,
+                        chord="cont",
+                        tempo="cont",
+                    )
+                )
 
         if len(chord_note_grid[i]) > 0:
             root = root_map[(sorted(chord_note_grid[i])[0] - 21) % 12]
             # events.append(f'Chord_{root}_{cquals[count]}')
-            events[-1].chord = f'{root}_{cquals[count]}'
+            events[-1].chord = f"{root}_{cquals[count]}"
 
             count += 1
 
         if len(melody_grid[i]) > 0:
             for pitch, velocity, duration in melody_grid[i]:
-                events.append(Event(
-                    family='note',
-                    pitch=pitch,
-                    velocity=LS_DEFAULT_VELOCITY,
-                    duration=max(min(duration, 16), 1)
-                ))
+                events.append(
+                    Event(
+                        family="note",
+                        pitch=pitch,
+                        velocity=LS_DEFAULT_VELOCITY,
+                        duration=max(min(duration, 16), 1),
+                    )
+                )
                 # events.append(f'Note_Pitch_{pitch}')
                 # remi.append(f'Note_Velocity_{velocity}')
                 # events.append(f'Note_Duration_{max(min(duration, 16), 1)*120}')
 
     assert count == len(cquals)
 
-    if events[-1].family == 'bar':
+    if events[-1].family == "bar":
         events.pop()
 
-    events.append(Event(family='spec', spec='se'))
+    events.append(Event(family="spec", spec="se"))
 
     return events, beat_per_bar
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

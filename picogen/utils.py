@@ -1,22 +1,27 @@
+import json
+import math
 import pickle
+import shutil
+from dataclasses import dataclass, fields
+
+import questionary
 import torch
 import torch.nn.functional as F
-import shutil
-import math
-import questionary
-from dataclasses import dataclass, fields
-import json
+
 
 def pickle_load(file):
-    return pickle.load(open(file, 'rb'))
+    return pickle.load(open(file, "rb"))
+
 
 def pickle_save(data, file):
-    pickle.dump(data, open(file, 'wb'))
+    pickle.dump(data, open(file, "wb"))
+
 
 class AttrDict(dict):
     def __init__(self, *args, **kwargs):
         super(AttrDict, self).__init__(*args, **kwargs)
         self.__dict__ = self
+
 
 @dataclass
 class HyperParam:
@@ -41,25 +46,30 @@ class HyperParam:
     max_position_embeddings: int
     cp_word_size: int
 
+
 def load_config(config_file, verbose=False):
     config = json.loads(config_file.read_text())
     hp = HyperParam(**config)
     if verbose:
-        print('checkpoint model config:')
+        print("checkpoint model config:")
         for v in fields(hp):
-            print(f'\t{v.name}: {getattr(hp, v.name)}')
+            print(f"\t{v.name}: {getattr(hp, v.name)}")
     return hp
+
 
 def query_mkdir(path):
     if not path.exists():
-        confirm = questionary.confirm(f'Directory "{path}" does not exist, create?', default=False).ask()
+        confirm = questionary.confirm(
+            f'Directory "{path}" does not exist, create?', default=False
+        ).ask()
         if confirm:
             path.mkdir(parents=True)
         else:
             print(f'Directory "{path}" does not exist. Exit.')
             exit(1)
 
-def init_ckpt_dir(ckpt_dir, config_file, config_name = 'config'):
+
+def init_ckpt_dir(ckpt_dir, config_file, config_name="config"):
     t_path = (ckpt_dir / config_name).with_suffix(config_file.suffix)
     if not t_path.exists():
         # ckpt_dir.mkdir(exist_ok=True)
@@ -75,22 +85,29 @@ def init_ckpt_dir(ckpt_dir, config_file, config_name = 'config'):
             if override:
                 shutil.copyfile(config_file, t_path)
             else:
-                print('Conflicting config file: "{}" and "{}". Exit.'.format(config_file, t_path))
+                print(
+                    'Conflicting config file: "{}" and "{}". Exit.'.format(
+                        config_file, t_path
+                    )
+                )
                 exit(1)
                 # raise ValueError(f'config file {config_file} and {t_path} are not the same')
+
 
 def save_checkpoint(filepath, obj):
     print("Saving checkpoint to {}".format(filepath))
     torch.save(obj, filepath)
     print("Complete.")
 
+
 def scan_checkpoint(cp_dir, prefix):
     # pattern = os.path.join(cp_dir, prefix + '????????')
     # cp_list = glob.glob(pattern)
-    cp_list = list(cp_dir.glob(f'{prefix}*'))
+    cp_list = list(cp_dir.glob(f"{prefix}*"))
     if len(cp_list) == 0:
         return None
     return sorted(cp_list, key=lambda n: int(n.stem.split("_")[-1]))[-1]
+
 
 def load_checkpoint(filepath, device):
     assert filepath.is_file()
@@ -99,7 +116,8 @@ def load_checkpoint(filepath, device):
     print("Complete.")
     return checkpoint_dict
 
-def top_p(logits, thres = 0.9, temperature = 1.0):
+
+def top_p(logits, thres=0.9, temperature=1.0):
     assert logits.dim() == 2
 
     sorted_logits, sorted_indices = torch.sort(logits, descending=True)
@@ -111,15 +129,16 @@ def top_p(logits, thres = 0.9, temperature = 1.0):
     sorted_indices_to_remove[:, 1:] = sorted_indices_to_remove[:, :-1].clone()
     sorted_indices_to_remove[:, 0] = 0
 
-    sorted_logits[sorted_indices_to_remove] = float('-inf')
+    sorted_logits[sorted_indices_to_remove] = float("-inf")
     # sorted_logits = sorted_logits * temperature
     return sorted_logits.scatter(1, sorted_indices, sorted_logits)
 
-def top_k(logits, thres = 0.9):
+
+def top_k(logits, thres=0.9):
     assert logits.dim() == 2
 
     k = math.ceil((1 - thres) * logits.shape[-1])
     val, ind = torch.topk(logits, k)
-    probs = torch.full_like(logits, float('-inf'))
+    probs = torch.full_like(logits, float("-inf"))
     probs.scatter_(1, ind, val)
     return probs

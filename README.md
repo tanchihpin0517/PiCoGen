@@ -1,1 +1,1 @@
-# PiCoGen
+# picogen2

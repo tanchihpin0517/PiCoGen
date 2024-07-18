@@ -8,10 +8,13 @@ from typing import Tuple
 from omegaconf import OmegaConf
 from termcolor import colored
 
-from ..utils import logger
+from .. import utils
+from ..utils import logger, song_dir_name
 
 
 def pop2piano(song_file: Path, data_dir: Path, partition: Tuple[int, int] = (0, 1)):
+    assert data_dir.exists(), f"{data_dir} does not exist"
+
     song_id_pairs = []
     for line in song_file.read_text().strip().split("\n")[1:]:
         song_id_pairs.append(line.split(","))
@@ -24,9 +27,9 @@ def pop2piano(song_file: Path, data_dir: Path, partition: Tuple[int, int] = (0, 
         piano_url = f"https://www.youtube.com/watch?v={piano_id}"
         song_url = f"https://www.youtube.com/watch?v={song_id}"
 
-        tgt_piano_file = data_dir / "{:04d}".format(i) / "piano.mp3"
-        tgt_info_file = data_dir / "{:04d}".format(i) / "info.yaml"
-        tgt_song_file = data_dir / "{:04d}".format(i) / "song.mp3"
+        tgt_piano_file = data_dir / song_dir_name(i) / "piano.mp3"
+        tgt_info_file = data_dir / song_dir_name(i) / "info.yaml"
+        tgt_song_file = data_dir / song_dir_name(i) / "song.mp3"
 
         if tgt_piano_file.exists() and tgt_info_file.exists() and tgt_song_file.exists():
             logger.info(f"Skipping ({piano_id}, {song_id})")

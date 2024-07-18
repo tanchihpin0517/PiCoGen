@@ -3,4 +3,4 @@ joblib
 yt-dlp
 questionary
 termcolor
-
+mirtoolkit @ git+https://github.com/tanchihpin0517/mirtoolkit.git

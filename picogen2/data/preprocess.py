@@ -93,7 +93,7 @@ def detect_beat(
 
 
 def detect_beat_file(input_file: Path, output_file: Path):
-    beat, downbeat = beat_transformer.detect(input_file)
+    beats, downbeats = beat_transformer.detect(input_file)
     output_file.write_text(
-        json.dumps({"beat": beat.tolist(), "downbeat": downbeat.tolist()}, indent=4)
+        json.dumps({"beats": beats.tolist(), "downbeats": downbeats.tolist()}, indent=4)
     )

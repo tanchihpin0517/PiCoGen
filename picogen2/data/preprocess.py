@@ -2,12 +2,14 @@ import json
 from pathlib import Path
 from typing import Tuple
 
-from mirtoolkit import beat_transformer, bytedance_piano_transcription
+import numpy as np
+from mirtoolkit import beat_transformer, bytedance_piano_transcription, sheetsage
 
 from ..utils import check_task_done, logger, mark_task_done, song_dir_name
 
 TASK_TRANS = "transcribe"
 TASK_BEAT = "beat"
+TASK_SHEETSAGE = "sheetsage"
 
 
 def pop2piano(
@@ -28,6 +30,7 @@ def pop2piano(
     task_func = {
         TASK_TRANS: transcribe,
         TASK_BEAT: detect_beat,
+        TASK_SHEETSAGE: extract_sheetsage_last_hidden_state,
     }
     if task == "all":
         for t in task_func:
@@ -36,14 +39,20 @@ def pop2piano(
         task_func[task](data_dir, output_dir, partition, debug, overwrite)
 
 
-def transcribe(
-    data_dir: Path, output_dir: Path, partition: Tuple[int, int], debug=False, overwrite=False
-):
+def _get_song_dirs(data_dir: Path, partition: Tuple[int, int], debug=False):
     song_dirs = sorted([d for d in data_dir.iterdir() if d.is_dir()])
     song_dirs = song_dirs[partition[0] :: partition[1]]
 
     if debug:
         song_dirs = song_dirs[:2]
+
+    return song_dirs
+
+
+def transcribe(
+    data_dir: Path, output_dir: Path, partition: Tuple[int, int], debug=False, overwrite=False
+):
+    song_dirs = _get_song_dirs(data_dir, partition, debug)
 
     for song_dir in song_dirs:
         index = int(song_dir.name)
@@ -68,11 +77,7 @@ def trancribe_file(input_file: Path, output_file: Path):
 def detect_beat(
     data_dir: Path, output_dir: Path, partition: Tuple[int, int], debug=False, overwrite=False
 ):
-    song_dirs = sorted([d for d in data_dir.iterdir() if d.is_dir()])
-    song_dirs = song_dirs[partition[0] :: partition[1]]
-
-    if debug:
-        song_dirs = song_dirs[:2]
+    song_dirs = _get_song_dirs(data_dir, partition, debug)
 
     for song_dir in song_dirs:
         index = int(song_dir.name)
@@ -87,13 +92,41 @@ def detect_beat(
             input_file = song_dir / f"{name}.mp3"
             output_file = output_dir / song_dir_name(index) / f"{name}_beat.json"
             logger.info(f"Detecting beat for {input_file} to {output_file}")
-            detect_beat_file(input_file, output_file)
+
+            beats, downbeats = beat_transformer.detect(input_file)
+            output_file.write_text(
+                json.dumps({"beats": beats.tolist(), "downbeats": downbeats.tolist()}, indent=4)
+            )
 
         mark_task_done(TASK_BEAT, output_dir / song_dir_name(index))
 
 
-def detect_beat_file(input_file: Path, output_file: Path):
-    beats, downbeats = beat_transformer.detect(input_file)
-    output_file.write_text(
-        json.dumps({"beats": beats.tolist(), "downbeats": downbeats.tolist()}, indent=4)
-    )
+def extract_sheetsage_last_hidden_state(
+    data_dir: Path, output_dir: Path, partition: Tuple[int, int], debug=False, overwrite=False
+):
+    song_dirs = _get_song_dirs(data_dir, partition, debug)
+    for song_dir in song_dirs:
+        index = int(song_dir.name)
+        if not overwrite and check_task_done(TASK_SHEETSAGE, output_dir / song_dir_name(index)):
+            logger.warn(f"Task {index} has been done. Skip.")
+            continue
+
+        logger.info("Extracting SheetSage's last hidden state for song %d", index)
+        (output_dir / song_dir_name(index)).mkdir(parents=True, exist_ok=True)
+
+        for name in ["piano", "song"]:
+            input_file = song_dir / f"{name}.mp3"
+            output_file = output_dir / song_dir_name(index) / f"{name}_sheetsage.npz"
+            beat_file = output_dir / song_dir_name(index) / f"{name}_beat.json"
+
+            beat_information = json.loads(beat_file.read_text())
+            sheetsage_output = sheetsage.infer(
+                audio_path=input_file, beat_information=beat_information
+            )
+            np.savez_compressed(
+                output_file,
+                melody=sheetsage_output["melody_last_hidden_state"],
+                harmony=sheetsage_output["harmony_last_hidden_state"],
+            )
+
+        mark_task_done(TASK_SHEETSAGE, output_dir / song_dir_name(index))

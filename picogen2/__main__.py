@@ -26,7 +26,7 @@ def main():
         "--task",
         type=str,
         default="all",
-        choices=["all", "transcribe", "beat"],
+        choices=["all", "transcribe", "beat", "sheetsage"],
         help="Subtask of preprocessing",
     )
     preprocess_parser.add_argument("--data_dir", type=Path, required=True, help="Dataset directory")

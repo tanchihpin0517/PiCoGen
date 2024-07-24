@@ -3,4 +3,6 @@ joblib
 yt-dlp
 questionary
 termcolor
+transformers
+miditoolkit
 mirtoolkit @ git+https://github.com/tanchihpin0517/mirtoolkit.git

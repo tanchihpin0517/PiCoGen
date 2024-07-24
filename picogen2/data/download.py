@@ -8,7 +8,6 @@ from typing import Tuple
 from omegaconf import OmegaConf
 from termcolor import colored
 
-from .. import utils
 from ..utils import logger, song_dir_name
 
 
@@ -84,6 +83,14 @@ def donwload_song(url: str, output_file: Path):
     ext = "mp3"
     tmp_dir = tempfile.TemporaryDirectory()
     tmp_file = Path(tmp_dir.name) / f"audio.{ext}"
+    ytdlp_download(url, tmp_file)
+    output_file.write_bytes(tmp_file.read_bytes())
+
+    return meta
+
+
+def ytdlp_download(url: str, output_file: Path):
+    ext = output_file.suffix[1:]
     subprocess.run(
         [
             "yt-dlp",
@@ -97,11 +104,8 @@ def donwload_song(url: str, output_file: Path):
             "--postprocessor-args",
             "ffmpeg:-ac 2 -ar 44100",
             "-o",
-            tmp_file,
+            output_file,
             url,
         ],
         check=True,
     )
-    output_file.write_bytes(tmp_file.read_bytes())
-
-    return meta

@@ -1,0 +1,26 @@
+{
+  "beat_div": 4,
+  "ticks_per_beat": 480,
+
+  "seed": 1234,
+  "learning_rate": 0.0002,
+  "learning_rate_min": 0.0001,
+  "adam_b1": 0.9,
+  "adam_b2": 0.99,
+  "sched_T": 5,
+  "warmup_epochs": 10,
+
+  "vocab_size": 500,
+  "token_class": 2,
+  "condition_class": 2,
+  "d_model": 512,
+  "d_bottleneck": 512,
+  "num_layers": 8,
+  "num_layers_encoder": 4,
+  "num_heads": 8,
+  "activation": "gelu",
+  "dropout": 0.1,
+  "max_seq_len": 1024,
+  "max_position_embeddings": 1024,
+  "loss_weight": 0.25
+}

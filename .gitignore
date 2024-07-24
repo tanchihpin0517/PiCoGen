@@ -4,6 +4,10 @@
 /azure*
 /data/
 /pretrained_models/
+/ckpt/
+/tests_output/
+/tests_input/
+/vscode_task.sh
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

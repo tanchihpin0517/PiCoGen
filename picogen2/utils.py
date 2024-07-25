@@ -141,3 +141,13 @@ def top_k(logits, thres=0.9):
     probs = torch.full_like(logits, float("-inf"))
     probs.scatter_(1, ind, val)
     return probs
+
+
+def normalize(audio, min_y=-1.0, max_y=1.0, eps=1e-6):
+    assert len(audio.shape) == 1
+    max_y -= eps
+    min_y += eps
+    amax = audio.max()
+    amin = audio.min()
+    audio = (max_y - min_y) * (audio - amin) / (amax - amin) + min_y
+    return audio

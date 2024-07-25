@@ -1,4 +1,5 @@
 import json
+import multiprocessing as mp
 from pathlib import Path
 from typing import Tuple
 
@@ -6,10 +7,12 @@ import numpy as np
 from mirtoolkit import beat_transformer, bytedance_piano_transcription, sheetsage
 
 from ..utils import check_task_done, logger, mark_task_done, song_dir_name
+from .align import save_delayed_song
 
 TASK_TRANS = "transcribe"
 TASK_BEAT = "beat"
 TASK_SHEETSAGE = "sheetsage"
+TASK_ALIGN = "align"
 
 
 def pop2piano(
@@ -31,6 +34,7 @@ def pop2piano(
         TASK_TRANS: transcribe,
         TASK_BEAT: detect_beat,
         TASK_SHEETSAGE: extract_sheetsage_last_hidden_state,
+        TASK_ALIGN: align,
     }
     if task == "all":
         for t in task_func:
@@ -130,3 +134,37 @@ def extract_sheetsage_last_hidden_state(
             )
 
         mark_task_done(TASK_SHEETSAGE, output_dir / song_dir_name(index))
+
+
+def align(
+    data_dir: Path,
+    output_dir: Path,
+    partition: Tuple[int, int],
+    debug=False,
+    overwrite=False,
+):
+    song_dirs = _get_song_dirs(data_dir, partition, debug)
+    with mp.Pool() as pool:
+        pool.starmap(_align_song, [(song_dir, output_dir, overwrite) for song_dir in song_dirs])
+
+
+def _align_song(song_dir: Path, output_dir: Path, overwrite=False):
+    index = int(song_dir.name)
+    if not overwrite and check_task_done(TASK_ALIGN, output_dir / song_dir_name(index)):
+        logger.warn(f"Task {index} has been done. Skip.")
+        return
+
+    logger.info("Align song %d", index)
+    (output_dir / song_dir_name(index)).mkdir(parents=True, exist_ok=True)
+
+    song_audio_file = song_dir / "song.mp3"
+    piano_midi_file = output_dir / song_dir_name(index) / "piano.mid"
+    align_info_file = output_dir / song_dir_name(index) / "align_info.json"
+
+    save_delayed_song(
+        song_audio_file=song_audio_file,
+        piano_midi_file=piano_midi_file,
+        align_info_file=align_info_file,
+    )
+
+    mark_task_done(TASK_ALIGN, output_dir / song_dir_name(index))

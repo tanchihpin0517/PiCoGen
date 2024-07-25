@@ -29,7 +29,13 @@ def main():
         "--task",
         type=str,
         default="all",
-        choices=["all", "transcribe", "beat", "sheetsage"],
+        choices=[
+            "all",
+            preprocess.TASK_TRANS,
+            preprocess.TASK_BEAT,
+            preprocess.TASK_SHEETSAGE,
+            preprocess.TASK_ALIGN,
+        ],
         help="Subtask of preprocessing",
     )
     preprocess_parser.add_argument("--data_dir", type=Path, required=True, help="Dataset directory")

@@ -4,5 +4,7 @@ yt-dlp
 questionary
 termcolor
 transformers
+pyrubberband
+synctoolbox
 miditoolkit
 mirtoolkit @ git+https://github.com/tanchihpin0517/mirtoolkit.git

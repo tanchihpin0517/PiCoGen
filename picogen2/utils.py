@@ -175,4 +175,4 @@ def get_default_checkpoint_file():
             logger.error("Failed to download file from {}: {}".format(url, e))
             return
 
-        return default_ckpt_file
+    return default_ckpt_file

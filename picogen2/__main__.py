@@ -147,8 +147,7 @@ def command_infer(args):
         if args.ckpt_file is None:
             ckpt_file = get_default_checkpoint_file()
             if ckpt_file is None:
-                logger.error("No checkpoint file found")
-                exit(1)
+                raise ValueError("No checkpoint file found")
         else:
             ckpt_file = args.ckpt_file
 

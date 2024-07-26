@@ -7,7 +7,7 @@ import questionary
 from . import infer
 from .data import download, preprocess
 from .repr import Vocab, gen_vocab
-from .utils import logger
+from .utils import get_default_checkpoint_file, logger
 
 
 def main():
@@ -144,13 +144,21 @@ def command_infer(args):
         )
 
     if args.stage == "piano":
+        if args.ckpt_file is None:
+            ckpt_file = get_default_checkpoint_file()
+            if ckpt_file is None:
+                logger.error("No checkpoint file found")
+                exit(1)
+        else:
+            ckpt_file = args.ckpt_file
+
         infer.picogen2(
             beat_file=args.output_dir / "song_beat.json",
             sheetsage_file=args.output_dir / "song_sheetsage.npz",
             output_dir=args.output_dir,
             config_file=args.config_file,
             vocab_file=args.vocab_file,
-            ckpt_file=args.ckpt_file,
+            ckpt_file=ckpt_file,
             max_bar_num=args.max_bar_num,
             temperature=args.temperature,
         )

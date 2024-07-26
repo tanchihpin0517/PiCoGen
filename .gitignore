@@ -5,9 +5,10 @@
 /data/
 /pretrained_models/
 /ckpt/
-/tests_output/
-/tests_input/
+/demo_output/
+/demo_input/
 /vscode_task.sh
+/docker_cache/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

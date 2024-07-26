@@ -86,7 +86,7 @@ if [ -z $input_audio ]; then
         python -m picogen2 infer \
         --stage download \
         --input_url $input_url \
-        --output_dir $output_dir
+        --output_dir $output_dir || exit 1
     input_audio=$output_dir/song.mp3
 fi
 
@@ -96,7 +96,7 @@ if [ ! -f "$beat_file" ]; then
         python -m picogen2 infer \
         --stage beat \
         --input_audio $input_audio \
-        --output_dir $output_dir
+        --output_dir $output_dir || exit 1
 fi
 
 if [ ! -f "$sheetsage_file" ]; then
@@ -105,7 +105,13 @@ if [ ! -f "$sheetsage_file" ]; then
         python -m picogen2 infer \
         --stage sheetsage \
         --input_audio $input_audio \
-        --output_dir $output_dir
+        --output_dir $output_dir || exit 1
+fi
+
+if [ -n "$ckpt_file" ]; then
+    ckpt_arg="--ckpt_file $ckpt_file"
+else
+    ckpt_arg=""
 fi
 
 conda run -n picogen2 --no-capture-output \
@@ -114,5 +120,5 @@ conda run -n picogen2 --no-capture-output \
     --input_audio $input_audio \
     --output_dir $output_dir \
     --config_file $config_file \
-    --ckpt_file $ckpt_file \
-    --vocab_file $vocab_file
+    --vocab_file $vocab_file \
+    $ckpt_arg

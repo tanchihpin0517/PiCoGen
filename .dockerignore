@@ -5,3 +5,10 @@
 .venv
 __pycache__
 *.egg-info
+
+/azure*
+/data/
+/ckpt/
+/demo_output/
+/demo_input/
+/vscode_task.sh

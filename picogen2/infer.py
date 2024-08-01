@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
-from mirtoolkit import beat_transformer, sheetsage
+from mirtoolkit import beat_this, sheetsage
 from tqdm import tqdm
 
 from .data.download import ytdlp_download
@@ -29,7 +29,7 @@ def download(input_url: str, output_file: Path):
 
 @torch.no_grad()
 def detect_beat(audio_file: Path, output_file: Path):
-    beats, downbeats = beat_transformer.detect(audio_file)
+    beats, downbeats = beat_this.detect(audio_file)
     beat_info = {"beats": beats.tolist(), "downbeats": downbeats.tolist()}
     output_file.write_text(json.dumps(beat_info, indent=4))
 

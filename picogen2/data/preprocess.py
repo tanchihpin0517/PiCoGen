@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Tuple
 
 import numpy as np
-from mirtoolkit import beat_transformer, bytedance_piano_transcription, sheetsage
+from mirtoolkit import beat_this, bytedance_piano_transcription, sheetsage
 
 from ..utils import check_task_done, logger, mark_task_done, song_dir_name
 from .align import save_delayed_song
@@ -97,7 +97,7 @@ def detect_beat(
             output_file = output_dir / song_dir_name(index) / f"{name}_beat.json"
             logger.info(f"Detecting beat for {input_file} to {output_file}")
 
-            beats, downbeats = beat_transformer.detect(input_file)
+            beats, downbeats = beat_this.detect(input_file)
             output_file.write_text(
                 json.dumps({"beats": beats.tolist(), "downbeats": downbeats.tolist()}, indent=4)
             )

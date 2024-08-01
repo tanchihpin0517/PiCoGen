@@ -12,6 +12,7 @@ rsync -a ~/.mirtoolkit/ ./docker_temp/.mirtoolkit/
 rsync -a ~/.cache/picogen2/ ./docker_temp/picogen2/
 rsync -a ~/.cache/jukebox/ ./docker_temp/jukebox/
 rsync -a ~/.sheetsage/sheetsage/ ./docker_temp/sheetsage/
+rsync -a ~/.cache/torch/hub/checkpoints/beat_this-final0.ckpt ./docker_temp/beat_this-final0.ckpt
 
 docker build -t ${DOCKER_NAMESPACE}/${DOCKER_NAME}:${DOCKER_TAG} -f docker/Dockerfile $@ .
 

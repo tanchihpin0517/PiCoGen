@@ -5,9 +5,10 @@ ARG APP_PATH=${HOME}/picogen2
 WORKDIR ${APP_PATH}
 SHELL ["/bin/bash", "-c"]
 
-COPY pretrained_models $APP_PATH/pretrained_models
 COPY docker_temp/.piano_transcription_inference_data $HOME/.piano_transcription_inference_data
 COPY docker_temp/.mirtoolkit $HOME/.mirtoolkit
 COPY docker_temp/picogen2 $HOME/.cache/picogen2
 COPY docker_temp/jukebox $HOME/.cache/jukebox
 COPY docker_temp/sheetsage $HOME/.sheetsage/sheetsage
+RUN mkdir -p $HOME/.cache/torch/hub/checkpoints
+COPY docker_temp/beat_this-final0.ckpt $HOME/.cache/torch/hub/checkpoints/beat_this-final0.ckpt

@@ -74,8 +74,12 @@ def download_audio(url, output_dir):
 def extract_leadsheet(audio_file, output_dir):
     tmp_dir = tempfile.TemporaryDirectory()
 
-    cmd = f"python -m sheetsage.sheetsage.infer -j --output_dir {tmp_dir.name} {audio_file}"
-    subprocess.run(cmd, shell=True, check=True)
+    try:
+        cmd = f"python -m sheetsage.sheetsage.infer -j --output_dir {tmp_dir.name} {audio_file}"
+        subprocess.run(cmd, shell=True, check=True)
+    except subprocess.CalledProcessError:
+        cmd = f"python -m sheetsage.sheetsage.infer -j --output_dir {tmp_dir.name} {audio_file} --measures_per_chunk 4"
+        subprocess.run(cmd, shell=True, check=True)
 
     ls_dir = output_dir / "leadsheet"
     ls_dir.mkdir(exist_ok=True)

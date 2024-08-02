@@ -150,8 +150,8 @@ def gen_piano_cover(ca):
 
             if out_event in (bar_src_event, end_event):
                 break
-            if len(out_events) > 10240:
-                break
+            # if len(out_events) > 10240:
+            #     break
 
             tgt_seg.append(out_id)
             pbar.set_description(f"length: {len(tgt_seg)}")

@@ -21,13 +21,21 @@ LEADSHEET_DIR_NAME = "leadsheet"
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_url_or_file", type=str)
-    parser.add_argument("--output_dir", type=Path, required=True)
-    parser.add_argument("--leadsheet_dir", type=Path)
 
-    parser.add_argument("--config_file", type=Path, required=True)
-    parser.add_argument("--ckpt_file", type=Path, required=True)
-    parser.add_argument("--vocab_file", type=Path, required=True)
+    subparsers = parser.add_subparsers(dest="stage", required=True)
+
+    # Stage 1 parser
+    stage1_parser = subparsers.add_parser("stage1")
+    stage1_parser.add_argument("--input_url_or_file", type=str)
+    stage1_parser.add_argument("--output_dir", type=Path, required=True)
+
+    # Stage 2 parser
+    stage2_parser = subparsers.add_parser("stage2")
+    stage2_parser.add_argument("--leadsheet_dir", type=Path, required=True)
+    stage2_parser.add_argument("--output_dir", type=Path, required=True)
+    stage2_parser.add_argument("--config_file", type=Path, required=True)
+    stage2_parser.add_argument("--ckpt_file", type=Path, required=True)
+    stage2_parser.add_argument("--vocab_file", type=Path, required=True)
 
     return parser.parse_args()
 
@@ -36,24 +44,12 @@ def main():
     ca = parse_args()
     query_mkdir(ca.output_dir)
 
-    run(ca)
-
-
-def run(ca):
-    if ca.leadsheet_dir is None:
+    if ca.stage == "stage1":
         run_sheetsage(ca)
+    elif ca.stage == "stage2":
+        gen_piano_cover(ca)
     else:
-        copy_leadsheet(ca)
-
-    ca.leadsheet_dir = ca.output_dir / LEADSHEET_DIR_NAME
-    gen_piano_cover(ca)
-
-
-def copy_leadsheet(ca):
-    ls_dir = ca.output_dir / LEADSHEET_DIR_NAME
-    ls_dir.mkdir(exist_ok=True)
-    for file in ca.leadsheet_dir.glob("*"):
-        shutil.copy(file, ls_dir / file.name)
+        raise ValueError(f"Unknown stage: {ca.stage}")
 
 
 def run_sheetsage(ca):
@@ -78,10 +74,7 @@ def download_audio(url, output_dir):
 def extract_leadsheet(audio_file, output_dir):
     tmp_dir = tempfile.TemporaryDirectory()
 
-    cmd = (
-        f"conda run -n sheetsage --no-capture-output "
-        f"python -m sheetsage.sheetsage.infer -j --output_dir {tmp_dir.name} {audio_file}"
-    )
+    cmd = f"python -m sheetsage.sheetsage.infer -j --output_dir {tmp_dir.name} {audio_file}"
     subprocess.run(cmd, shell=True, check=True)
 
     ls_dir = output_dir / "leadsheet"
@@ -102,7 +95,6 @@ def gen_piano_cover(ca):
     model = CPTransformer(hp).to(device)
     state_dict = load_checkpoint(ca.ckpt_file, device)
     model.load_state_dict(state_dict["model"])
-    # print(model)
 
     model.eval()
 
@@ -141,33 +133,20 @@ def gen_piano_cover(ca):
         if ls_bar_start == 0:
             tgt_seg.append(tokenizer.e2i(Event(family="spec", spec="ss")))
 
-        # # generate kv cache
-        # input_ids = torch.LongTensor(tgt_seg)[None, :, :].to(device)
-        # output_ids, past_kv = model.generate(input_ids, family_mask, last_past_kv)
-        # last_past_kv = past_kv
-
         bar_tgt_event = Event(family="bar", bar="tgt")
         tgt_seg.append(tokenizer.e2i(bar_tgt_event))
-
-        # tgt_events = [tokenizer.i2e(t) for t in tgt_seg]
-        # print(*tgt_events, sep="\n")
 
         while True:
             if len(tgt_seg) >= 1024:
                 tgt_seg = tgt_seg[512:]
                 tgt_seg = [tokenizer.e2i(bos_event)] + tgt_seg
 
-            # input_ids = torch.LongTensor(tgt_seg)[None, -1:, :].to(device)
-            # input_ids = torch.LongTensor(tgt_seg[-1])[None, None, :].to(device)
             input_ids = torch.LongTensor(tgt_seg)[None, :, :].to(device)
-            # assert input_ids.shape == (1, 1, len(tgt_seg[-1]))
-
             output_ids, _ = model.generate(input_ids, family_mask, last_past_kv)
             out_id = output_ids[0][-1].tolist()
             out_event = tokenizer.i2e(out_id)
 
             out_events.append(out_event)
-            # print(out_event)
 
             if out_event in (bar_src_event, end_event):
                 break
@@ -175,8 +154,6 @@ def gen_piano_cover(ca):
                 break
 
             tgt_seg.append(out_id)
-            # last_past_kv = past_kv
-
             pbar.set_description(f"length: {len(tgt_seg)}")
 
         if len(out_events) > 10240:
@@ -198,7 +175,6 @@ def _get_item_content(item):
 
 
 def get_tempo_and_cquals(lily_file):
-    # midi_file = args.indir / 'output.midi'
     doc = ly.music.document(ly.document.Document(lily_file.read_text()))
 
     beat_per_bar = doc[1][1][0][0][2].numerator()
@@ -236,7 +212,6 @@ def get_cp_with_empty_chord(midi_file, beat_div, tempo=120, cquals=[]):
     midi = pm.PrettyMIDI(str(midi_file))
     drum, chord, melody = midi.instruments
 
-    # beat_div = 4
     beat_per_bar = 1
     for n in drum.notes[1:]:
         if n.pitch == drum.notes[0].pitch:
@@ -262,10 +237,8 @@ def get_cp_with_empty_chord(midi_file, beat_div, tempo=120, cquals=[]):
         offset = np.argmin(np.abs(subbeat_bins - note.end))
         chord_note_grid[onset].append(note.pitch)
 
-    # tempo_bins = np.array(range(32, 224, 3), dtype=int)
     bpm = DEFAULT_BPM_BINS[np.argmin(np.abs(DEFAULT_BPM_BINS - tempo))]
 
-    # events = [f'Tempo_{bpm}']
     events = [Event(family="spec", spec="ss")]
     subbeat_per_bar = beat_div * beat_per_bar
     root_map = {
@@ -293,7 +266,6 @@ def get_cp_with_empty_chord(midi_file, beat_div, tempo=120, cquals=[]):
             )
 
         if len(chord_note_grid[i]) > 0 or len(melody_grid[i]) > 0:
-            # events.append(f'Beat_{i%subbeat_per_bar}')
             if i != 0:
                 events.append(
                     Event(
@@ -306,7 +278,6 @@ def get_cp_with_empty_chord(midi_file, beat_div, tempo=120, cquals=[]):
 
         if len(chord_note_grid[i]) > 0:
             root = root_map[(sorted(chord_note_grid[i])[0] - 21) % 12]
-            # events.append(f'Chord_{root}_{cquals[count]}')
             events[-1].chord = f"{root}_{cquals[count]}"
 
             count += 1
@@ -321,9 +292,6 @@ def get_cp_with_empty_chord(midi_file, beat_div, tempo=120, cquals=[]):
                         duration=max(min(duration, 16), 1),
                     )
                 )
-                # events.append(f'Note_Pitch_{pitch}')
-                # remi.append(f'Note_Velocity_{velocity}')
-                # events.append(f'Note_Duration_{max(min(duration, 16), 1)*120}')
 
     assert count == len(cquals)
 

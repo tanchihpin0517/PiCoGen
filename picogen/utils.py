@@ -57,10 +57,10 @@ def load_config(config_file, verbose=False):
     return hp
 
 
-def query_mkdir(path):
+def query_mkdir(path, default=True):
     if not path.exists():
         confirm = questionary.confirm(
-            f'Directory "{path}" does not exist, create?', default=False
+            f'Directory "{path}" does not exist, create?', default=default
         ).ask()
         if confirm:
             path.mkdir(parents=True)

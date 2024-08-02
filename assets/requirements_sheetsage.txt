@@ -7,4 +7,10 @@ tqdm
 validators
 pillow
 jukebox @ git+https://github.com/chrisdonahue/jukebox.git@7e0a38b679ff3f64987d8297d9d0eb5a046880c1
-yt-dlp @ git+https://github.com/yt-dlp/yt-dlp.git@926ccc84ef91498f3147b07d15eb5f40cd070471
+yt-dlp
+questionary
+tensorboard
+transformers
+miditoolkit
+python-ly
+pretty_midi

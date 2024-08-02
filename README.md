@@ -1,6 +1,11 @@
-# PiCoGen
+# PiCoGen (v1)
 
 ## Setup
+### Clone
+```sh
+git clone --branch v1 https://github.com/tanchihpin0517/PiCoGen.git # or checkout branch `v1` after cloning
+```
+
 ### SheetSage
 Clone [SheetSage](https://github.com/chrisdonahue/sheetsage) into the root directory of this project.
 ```sh

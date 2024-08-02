@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
+    <!-- Replace the content tag with appropriate information -->
+    <meta name="description" content="DESCRIPTION META TAG" />
+    <meta property="og:title" content="SOCIAL MEDIA TITLE TAG" />
+    <meta
+      property="og:description"
+      content="SOCIAL MEDIA DESCRIPTION TAG TAG"
+    />
+    <meta property="og:url" content="URL OF THE WEBSITE" />
+    <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
+    <meta property="og:image" content="static/image/your_banner_image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:title" content="TWITTER BANNER TITLE META TAG" />
+    <meta
+      name="twitter:description"
+      content="TWITTER BANNER DESCRIPTION META TAG"
+    />
+    <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
+    <meta
+      name="twitter:image"
+      content="static/images/your_twitter_banner_image.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- Keywords for your paper to be indexed by-->
+    <meta name="keywords" content="KEYWORDS SHOULD BE PLACED HERE" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PiCoGen</title>
+    <link rel="icon" type="image/x-icon" href="static/images/favicon.ico" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="static/css/bulma.min.css" />
+    <link rel="stylesheet" href="static/css/bulma-carousel.min.css" />
+    <link rel="stylesheet" href="static/css/bulma-slider.min.css" />
+    <link rel="stylesheet" href="static/css/fontawesome.all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css"
+    />
+    <link rel="stylesheet" href="static/css/index.css" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+    <script defer src="static/js/fontawesome.all.min.js"></script>
+    <script src="static/js/bulma-carousel.min.js"></script>
+    <script src="static/js/bulma-slider.min.js"></script>
+    <script src="static/js/index.js"></script>
+  </head>
+
+  <body>
+    <section class="hero">
+      <div class="hero-body">
+        <div class="container is-max-desktop">
+          <div class="columns is-centered">
+            <div class="column has-text-centered">
+              <h1 class="title is-1 publication-title">
+                PiCoGen: Generate Piano Covers with a Two-stage Approach
+              </h1>
+              <!-- <h1 class="title is-2 publication-title">Automatic Piano Cover Generation System</h1> -->
+
+              <div class="is-size-5 publication-authors">
+                <!-- Paper authors -->
+                <span class="author-block">
+                  <a
+                    href="https://scholar.google.com.tw/citations?hl=en&user=lFp0KIYAAAAJ"
+                    target="_blank"
+                    >Chih-Pin Tan</a
+                  >,</span
+                >
+                <span class="author-block">
+                  <a
+                    href="https://scholar.google.com.tw/citations?user=6VKAbVsAAAAJ&hl=en"
+                    target="_blank"
+                    >Shuen-Huei Guan</a
+                  >,</span
+                >
+                <span class="author-block">
+                  <a
+                    href="https://scholar.google.com.tw/citations?user=OL-XGxcAAAAJ&hl=en"
+                    target="_blank"
+                    >Yi-Hsuan Yang</a
+                  >
+                </span>
+              </div>
+              <div class="is-size-5 publication-authors">
+                <span class="author-block"
+                  >National Taiwan University, KKCompany<br />ICMR 2024</span
+                >
+                <!-- <span class="eql-cntrb"><small><br><sup>*</sup>Indicates Equal Contribution</small></span> -->
+              </div>
+
+              <div class="column has-text-centered">
+                <div class="publication-links">
+                  <!-- Arxiv PDF link -->
+                  <span class="link-block">
+                    <a
+                      href="https://arxiv.org/pdf/2407.20883"
+                      target="_blank"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fas fa-file-pdf"></i>
+                      </span>
+                      <span>Paper</span>
+                    </a>
+                  </span>
+                  <!-- ArXiv abstract Link -->
+                  <span class="link-block">
+                    <a
+                      href="https://arxiv.org/abs/2407.20883"
+                      target="_blank"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="ai ai-arxiv"></i>
+                      </span>
+                      <span>ArXiv</span>
+                    </a>
+                  </span>
+
+                  <!-- Github link -->
+                  <span class="link-block">
+                    <a
+                      href="https://github.com/tanchihpin0517/PiCoGen/tree/v1"
+                      target="_blank"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fab fa-github"></i>
+                      </span>
+                      <span>Github</span>
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero is-small">
+      <div class="hero-body">
+        <div class="container">
+          <!-- <div id="results-carousel" class="carousel results-carousel"> -->
+          <div class="gith">
+            <div class="item">
+              <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                  <img src="static/images/picogen1-cover.jpg" alt="PiCoGen" />
+                  <h2 class="subtitle has-text-left">
+                    PiCoGen generates a piano cover in two stages: extracts
+                    firstly a lead sheet (i.e., melody line and chord
+                    progression) from an audio recording of the original song
+                    via audio analysis (i.e., transcription), and then turns the
+                    extracted lead sheet into a piano performance via
+                    conditional symbolic-domain music generation.
+                  </h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Paper abstract -->
+    <section class="section hero is-light">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths">
+            <h2 class="title is-3">Abstract</h2>
+            <div class="content has-text-justified">
+              <p>
+                Cover song generation stands out as a popular way of music
+                making in the music-creative community. In this study, we
+                introduce Piano Cover Generation (PiCoGen), a two-stage approach
+                for automatic cover song generation that transcribes the melody
+                line and chord progression of a song given its audio recording,
+                and then uses the resulting lead sheet as the condition to
+                generate a piano cover in the symbolic domain. This approach is
+                advantageous in that it does not required paired data of covers
+                and their original songs for training. Compared to an existing
+                approach that demands such paired data, our evaluation shows
+                that PiCoGen demonstrates competitive or even superior
+                performance across songs of different musical genres.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End paper abstract -->
+
+    <section class="hero is-small">
+      <div class="hero-body">
+        <div class="container">
+          <!-- <div id="results-carousel" class="carousel results-carousel"> -->
+          <div class="gith">
+            <div class="item">
+              <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                  <div class="columns is-centered has-text-centered">
+                    <div class="column is-four-fifths">
+                      <img
+                        src="static/images/picogen1-model.jpg"
+                        alt="PiCoGen"
+                      />
+                    </div>
+                  </div>
+
+                  <h2 class="subtitle has-text-left">
+                    PiCoGen consists of two core modules: <i>Extractor</i> and
+                    <i>Performer</i>. For each bar (musical measure)
+                    <em>k</em> of the input, the Extractor transcribes from the
+                    input its lead sheet <em>L<sup>k</sup></em> (a token
+                    sequence), and the Performer generates autoregressively the
+                    piano performance <em>S<sup>k</sup></em> (also a token
+                    sequence) for the same bar given the current and preceding
+                    sequences of lead sheet
+                    <em
+                      >[L<sup>1</sup>, L<sup>2</sup>, &hellip;
+                      L<sup>k</sup>]</em
+                    >
+                    and the preceding piano performances
+                    <em
+                      >[S<sup>1</sup>, S<sup>2</sup>, &hellip;
+                      S<sup>k-1</sup>]</em
+                    >
+                    organized in an interleaving fashion.
+                  </h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Youtube video -->
+    <section class="hero is-small is-light">
+      <div class="hero-body">
+        <div class="container">
+          <h2 class="title is-3">Video Presentation</h2>
+          <div class="columns is-centered has-text-centered">
+            <div class="column is-four-fifths">
+              <div class="publication-video">
+                <iframe
+                  src="https://www.youtube.com/embed/16WimUJ3WPY"
+                  frameborder="0"
+                  allow="autoplay; encrypted-media"
+                  allowfullscreen
+                ></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End youtube video -->
+
+    <!-- Paper poster -->
+    <section class="hero is-small is-light">
+      <div class="hero-body">
+        <div class="container">
+          <h2 class="title">Poster</h2>
+
+          <iframe src="static/pdfs/picogen1-post.pdf" width="100%" height="550">
+          </iframe>
+        </div>
+      </div>
+    </section>
+    <!--End paper poster -->
+
+    <!--BibTex citation -->
+    <section class="section" id="BibTeX">
+      <div class="container is-max-desktop content">
+        <h2 class="title">Citation</h2>
+        <pre><code>
+@inproceedings{tan2024picogen,
+    author = {Tan, Chih-Pin and Guan, Shuen-Huei and Yang, Yi-Hsuan},
+    title = {PiCoGen: Generate Piano Covers with a Two-stage Approach},
+    year = 2024,
+    booktitle = {Proceedings of the 2024 International Conference on Multimedia Retrieval (ICMR)},
+    location = {Phuket, Thailand},
+}
+        </code></pre>
+      </div>
+    </section>
+    <!--End BibTex citation -->
+
+    <footer class="footer">
+      <div class="container">
+        <div class="columns is-centered">
+          <div class="column is-8">
+            <div class="content">
+              <p>
+                This website is built with
+                <a
+                  href="https://github.com/eliahuhorwitz/Academic-project-page-template"
+                  target="_blank"
+                  >Academic Project Page Template</a
+                >
+                and licensed under a
+                <a
+                  rel="license"
+                  href="http://creativecommons.org/licenses/by-sa/4.0/"
+                  target="_blank"
+                  >Creative Commons Attribution-ShareAlike 4.0 International
+                  License</a
+                >.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Statcounter tracking code -->
+
+    <!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
+
+    <!-- End of Statcounter Code -->
+  </body>
+</html>

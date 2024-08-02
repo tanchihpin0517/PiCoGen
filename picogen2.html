@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
+    <!-- Replace the content tag with appropriate information -->
+    <meta name="description" content="DESCRIPTION META TAG" />
+    <meta property="og:title" content="SOCIAL MEDIA TITLE TAG" />
+    <meta
+      property="og:description"
+      content="SOCIAL MEDIA DESCRIPTION TAG TAG"
+    />
+    <meta property="og:url" content="URL OF THE WEBSITE" />
+    <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
+    <meta property="og:image" content="static/image/your_banner_image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:title" content="TWITTER BANNER TITLE META TAG" />
+    <meta
+      name="twitter:description"
+      content="TWITTER BANNER DESCRIPTION META TAG"
+    />
+    <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
+    <meta
+      name="twitter:image"
+      content="static/images/your_twitter_banner_image.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- Keywords for your paper to be indexed by-->
+    <meta name="keywords" content="KEYWORDS SHOULD BE PLACED HERE" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PiCoGen</title>
+    <link rel="icon" type="image/x-icon" href="static/images/favicon.ico" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="static/css/bulma.min.css" />
+    <link rel="stylesheet" href="static/css/bulma-carousel.min.css" />
+    <link rel="stylesheet" href="static/css/bulma-slider.min.css" />
+    <link rel="stylesheet" href="static/css/fontawesome.all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css"
+    />
+    <link rel="stylesheet" href="static/css/index.css" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+    <script defer src="static/js/fontawesome.all.min.js"></script>
+    <script src="static/js/bulma-carousel.min.js"></script>
+    <script src="static/js/bulma-slider.min.js"></script>
+    <script src="static/js/index.js"></script>
+  </head>
+
+  <body>
+    <section class="hero">
+      <div class="hero-body">
+        <div class="container is-max-desktop">
+          <div class="columns is-centered">
+            <div class="column has-text-centered">
+              <h1 class="title is-1 publication-title">
+                PiCoGen2: Piano cover generation with transfer learning approach
+                and weakly aligned data
+              </h1>
+
+              <div class="is-size-5 publication-authors">
+                <!-- Paper authors -->
+                <span class="author-block">
+                  <a
+                    href="https://scholar.google.com.tw/citations?hl=en&user=lFp0KIYAAAAJ"
+                    target="_blank"
+                    >Chih-Pin Tan</a
+                  >,</span
+                >
+                <span class="author-block">Hsin Ai,</span>
+                <span class="author-block">Yi-Hsin Chang,</span>
+                <span class="author-block">
+                  <a
+                    href="https://scholar.google.com.tw/citations?user=6VKAbVsAAAAJ&hl=en"
+                    target="_blank"
+                    >Shuen-Huei Guan</a
+                  >,</span
+                >
+                <span class="author-block">
+                  <a
+                    href="https://scholar.google.com.tw/citations?user=OL-XGxcAAAAJ&hl=en"
+                    target="_blank"
+                    >Yi-Hsuan Yang</a
+                  ></span
+                >
+              </div>
+              <div class="is-size-5 publication-authors">
+                <span class="author-block"
+                  >National Taiwan University, KKCompany<br />ISMIR 2024</span
+                >
+              </div>
+
+              <div class="column has-text-centered">
+                <div class="publication-links">
+                  <!-- Arxiv PDF link -->
+                  <span class="link-block">
+                    <a
+                      href=""
+                      target="_blank"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fas fa-file-pdf"></i>
+                      </span>
+                      <span>Paper</span>
+                    </a>
+                  </span>
+                  <!-- ArXiv abstract Link -->
+                  <span class="link-block">
+                    <a
+                      href=""
+                      target="_blank"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="ai ai-arxiv"></i>
+                      </span>
+                      <span>ArXiv</span>
+                    </a>
+                  </span>
+
+                  <!-- Github link -->
+                  <span class="link-block">
+                    <a
+                      href="https://github.com/tanchihpin0517/PiCoGen/tree/v2"
+                      target="_blank"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fab fa-github"></i>
+                      </span>
+                      <span>Github</span>
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero is-small">
+      <div class="hero-body">
+        <div class="container">
+          <!-- Paper video. -->
+          <!-- <h2 class="title is-3">Video Presentation</h2> -->
+          <div class="columns is-centered has-text-centered">
+            <div class="column is-four-fifths">
+              <div class="publication-video">
+                <!-- Youtube embed code here -->
+                <iframe
+                  src="https://www.youtube.com/embed/CXN-qdYRCfc"
+                  frameborder="0"
+                  allow="autoplay; encrypted-media"
+                  allowfullscreen
+                ></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Paper abstract -->
+    <section class="section hero is-light">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths">
+            <h2 class="title is-3">Abstract</h2>
+            <div class="content has-text-justified">
+              <p>
+                Piano cover generation aims to create a piano cover from a pop
+                song. Existing approaches mainly employ supervised learning and
+                the training demands strongly-aligned and paired song-to-piano
+                data, which is built by remapping piano notes to song audio.
+                This would, however, result in the loss of piano information and
+                accordingly cause inconsistencies between the original and
+                remapped piano versions. To overcome this limitation, we propose
+                a transfer learning approach that pre-trains our model on
+                piano-only data and fine-tunes it on weakly-aligned paired data
+                constructed without note remapping. During pre-training, to
+                guide the model to learn piano composition concepts instead of
+                merely transcribing audio, we use an existing lead sheet
+                transcription model as the encoder to extract high-level
+                features from the piano recordings. The pre-trained model is
+                then fine-tuned on the paired song-piano data to transfer the
+                learned composition knowledge to the pop song domain. Our
+                evaluation shows that this training strategy enables our model,
+                named PiCoGen2, to attain high-quality results, outperforming
+                baselines on both objective and subjective metrics across five
+                pop genres.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End paper abstract -->
+
+    <!-- Image carousel -->
+    <section class="hero is-small">
+      <div class="hero-body">
+        <div class="container">
+          <div class="columns is-centered has-text-centered">
+            <div class="column">
+              <div class="item">
+                <img src="static/images/picogen2-data.jpg" alt="PiCoGen" />
+                <h2 class="subtitle has-text-left">
+                  <b>Strong aligment v.s. Weak alignment</b>: Different from
+                  Pop2Piano, PiCoGen2 doesn't rely on aligning notes from a
+                  piano performance with the original song. Instead, it
+                  discovers the beat correspondence to establish the alignment
+                  between the original music and its cover. This figure
+                  illustrates: (a) Pop2Piano constructing strongly-aligned data
+                  by remapping piano notes to the song audio, altering the piano
+                  content, and (b) we using weakly-aligned song-to-piano pairs
+                  without note-remapping, leavning the piano content intact.
+                </h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero is-small is-light">
+      <div class="hero-body">
+        <div class="container">
+          <div class="columns is-centered has-text-centered">
+            <div class="column">
+              <div class="item">
+                <img src="static/images/picogen2-model.png" alt="PiCoGen2" />
+                <h2 class="subtitle has-text-left">
+                  <b>PiCoGen2 system diagram</b>: PiCoGen2 is an end-to-end
+                  system that generates a piano cover directly from the input
+                  audio. While it still utilizes SheetSage as a feature
+                  extractor, this version doesn't sample outputs from latent
+                  embeddings. Instead, it takes SheetSage's final hidden state
+                  as the intermediate representation, which is passed to the
+                  decoder as a condition. In this figure, the fire and snowflake
+                  symbols indicate the trainable and frozen parts. For example,
+                  the parameters for SheetSage are always frozen.
+                </h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End image carousel -->
+
+    <!--BibTex citation -->
+    <section class="section" id="BibTeX">
+      <div class="container is-max-desktop content">
+        <h2 class="title">Citation</h2>
+        <pre><code>
+@inproceedings{tan2024picogen2,
+    author = {Tan, Chih-Pin and Ai, Hsin and Chang, Yi-Hsin and Guan, Shuen-Huei and Yang, Yi-Hsuan},
+    title = {PiCoGen2: Piano cover generation with transfer learning approach and weakly aligned data},
+    year = 2024,
+    month = nov,
+    booktitle = {Proceedings of the 25th International Society for Music Information Retrieval Conference (ISMIR)},
+    address = {San Francisco, CA, United States},
+}
+        </code></pre>
+      </div>
+    </section>
+    <!--End BibTex citation -->
+
+    <footer class="footer">
+      <div class="container">
+        <div class="columns is-centered">
+          <div class="column is-8">
+            <div class="content">
+              <p>
+                This website is built with
+                <a
+                  href="https://github.com/eliahuhorwitz/Academic-project-page-template"
+                  target="_blank"
+                  >Academic Project Page Template</a
+                >
+                and licensed under a
+                <a
+                  rel="license"
+                  href="http://creativecommons.org/licenses/by-sa/4.0/"
+                  target="_blank"
+                  >Creative Commons Attribution-ShareAlike 4.0 International
+                  License</a
+                >.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Statcounter tracking code -->
+
+    <!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
+
+    <!-- End of Statcounter Code -->
+  </body>
+</html>

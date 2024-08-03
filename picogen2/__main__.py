@@ -4,16 +4,17 @@ from pathlib import Path
 
 import questionary
 
-from . import infer
+from . import assets, infer
 from .data import download, preprocess
 from .repr import Vocab, gen_vocab
-from .utils import get_default_checkpoint_file, logger
+from .utils import logger
 
 
 def main():
     parser = argparse.ArgumentParser(description="The training script for PiCoGen2")
     subparsers = parser.add_subparsers()
 
+    # Download
     download_parser = subparsers.add_parser(
         "download", help="Download Pop2Piano dataset from YouTube"
     )
@@ -23,6 +24,7 @@ def main():
     download_parser.add_argument("--loglevel", type=str, default="WARN")
     download_parser.add_argument("-p", "--partition", type=int, nargs=2, default=(0, 1))
 
+    # Preprocess
     preprocess_parser = subparsers.add_parser("preprocess", help="Prepare the training data")
     preprocess_parser.set_defaults(func=command_preprocess)
     preprocess_parser.add_argument(
@@ -47,10 +49,12 @@ def main():
     preprocess_parser.add_argument("--debug", action="store_true")
     preprocess_parser.add_argument("--overwrite", action="store_true")
 
+    # Generate vocabulary
     vocab_parser = subparsers.add_parser("generate_vocab", help="Generate vocabulary file")
     vocab_parser.set_defaults(func=command_vocab)
     vocab_parser.add_argument("--output_file", type=Path, required=True)
 
+    # Inference
     infer_parser = subparsers.add_parser("infer", help="Inference with trained model")
     infer_parser.set_defaults(func=command_infer)
     infer_parser.add_argument(
@@ -144,19 +148,16 @@ def command_infer(args):
         )
 
     if args.stage == "piano":
-        if args.ckpt_file is None:
-            ckpt_file = get_default_checkpoint_file()
-            if ckpt_file is None:
-                raise ValueError("No checkpoint file found")
-        else:
-            ckpt_file = args.ckpt_file
+        ckpt_file = assets.checkpoint_file() if args.ckpt_file is None else args.ckpt_file
+        config_file = assets.config_file() if args.config_file is None else args.config_file
+        vocab_file = assets.vocab_file() if args.vocab_file is None else args.vocab_file
 
         infer.picogen2(
             beat_file=args.output_dir / "song_beat.json",
             sheetsage_file=args.output_dir / "song_sheetsage.npz",
             output_dir=args.output_dir,
-            config_file=args.config_file,
-            vocab_file=args.vocab_file,
+            config_file=config_file,
+            vocab_file=vocab_file,
             ckpt_file=ckpt_file,
             max_bar_num=args.max_bar_num,
             temperature=args.temperature,

@@ -1,8 +1,6 @@
 import json
 import logging
 import math
-import shutil
-import subprocess
 from dataclasses import dataclass, fields
 from pathlib import Path
 
@@ -153,26 +151,3 @@ def normalize(audio, min_y=-1.0, max_y=1.0, eps=1e-6):
     amin = audio.min()
     audio = (max_y - min_y) * (audio - amin) / (amax - amin) + min_y
     return audio
-
-
-def get_default_checkpoint_file():
-    default_ckpt_file = Path.home() / ".cache" / "picogen2" / "picogen2_model"
-    if not default_ckpt_file.exists():
-        default_ckpt_file.parent.mkdir(parents=True, exist_ok=True)
-        url = "https://www.dropbox.com/scl/fi/6pjc9950zeex35wnrqn8c/picogen2_model?rlkey=ynt5oc6ju0lack9qoycuaaiel&st=iobep7pi&dl=0"
-        logger.warning("Download default model from {}".format(url))
-        logger.warning("Save to {}".format(default_ckpt_file))
-
-        # Check if wget is available
-        if shutil.which("wget") is None:
-            logger.error("wget is not installed. Please install wget to download the model.")
-            return
-
-        # Use wget to download the model
-        try:
-            subprocess.run(["wget", url, "-O", str(default_ckpt_file)], check=True)
-        except subprocess.CalledProcessError as e:
-            logger.error("Failed to download file from {}: {}".format(url, e))
-            return
-
-    return default_ckpt_file

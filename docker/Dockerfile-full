@@ -1,14 +1,19 @@
 FROM tanchihpin0517/picogen2:latest
 
-ARG HOME="/root"
-ARG APP_PATH=${HOME}/picogen2
-WORKDIR ${APP_PATH}
+ARG HOME="/home/picogen2"
+ARG APP_PATH="$HOME/picogen2"
+ARG DOCKER_USER="picogen2"
+
 SHELL ["/bin/bash", "-c"]
 
-COPY docker_temp/.piano_transcription_inference_data $HOME/.piano_transcription_inference_data
-COPY docker_temp/.mirtoolkit $HOME/.mirtoolkit
-COPY docker_temp/picogen2 $HOME/.cache/picogen2
-COPY docker_temp/jukebox $HOME/.cache/jukebox
-COPY docker_temp/sheetsage $HOME/.sheetsage/sheetsage
+WORKDIR ${APP_PATH}
+
+COPY --chown=${DOCKER_USER} docker_temp/.piano_transcription_inference_data $HOME/.piano_transcription_inference_data
+COPY --chown=${DOCKER_USER} docker_temp/.mirtoolkit $HOME/.mirtoolkit
+COPY --chown=${DOCKER_USER} docker_temp/picogen2 $HOME/.cache/picogen2
+COPY --chown=${DOCKER_USER} docker_temp/jukebox $HOME/.cache/jukebox
+COPY --chown=${DOCKER_USER} docker_temp/sheetsage $HOME/.sheetsage/sheetsage
 RUN mkdir -p $HOME/.cache/torch/hub/checkpoints
-COPY docker_temp/beat_this-final0.ckpt $HOME/.cache/torch/hub/checkpoints/beat_this-final0.ckpt
+COPY --chown=${DOCKER_USER} docker_temp/beat_this-final0.ckpt $HOME/.cache/torch/hub/checkpoints/beat_this-final0.ckpt
+
+ENTRYPOINT [ "bash", "-c" ]

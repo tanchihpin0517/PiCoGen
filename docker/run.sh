@@ -10,5 +10,6 @@ else
     exit 1
 fi
 
-docker run --rm --runtime=nvidia --gpus all \
-    -it --entrypoint bash tanchihpin0517/picogen2:$IMAGE_TAG
+docker run --rm --runtime=nvidia --gpus all -it \
+    --name picogen2 \
+    tanchihpin0517/picogen2:$IMAGE_TAG bash

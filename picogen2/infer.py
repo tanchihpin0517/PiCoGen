@@ -11,13 +11,7 @@ from tqdm import tqdm
 from .data.download import ytdlp_download
 from .model import PiCoGenDecoder
 from .repr import Event, Tokenizer
-from .utils import (
-    downbeat_time_to_index,
-    load_checkpoint,
-    load_config,
-    logger,
-    query_mkdir,
-)
+from .utils import downbeat_time_to_index, load_checkpoint, load_config, logger
 
 
 def download(input_url: str, output_file: Path):
@@ -62,8 +56,7 @@ def picogen2(
     else:
         device = torch.device("cpu")
 
-    if not query_mkdir(output_dir):
-        exit(0)
+    assert output_dir.is_dir(), f"{output_dir} is not a directory"
 
     logger.info(f"Loading model from {ckpt_file}")
     hp = load_config(config_file)

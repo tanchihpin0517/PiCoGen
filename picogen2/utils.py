@@ -5,7 +5,6 @@ from dataclasses import dataclass, fields
 from pathlib import Path
 
 import numpy as np
-import questionary
 import torch
 import torch.nn.functional as F
 
@@ -95,20 +94,6 @@ def load_checkpoint(filepath: Path, device):
     checkpoint_dict = torch.load(filepath, map_location=device, weights_only=False)
     logger.info("Done.")
     return checkpoint_dict
-
-
-def query_mkdir(path):
-    if not path.exists():
-        confirm = questionary.confirm(
-            f'Directory "{path}" does not exist, create?', default=False
-        ).ask()
-        if confirm:
-            path.mkdir(parents=True)
-            return True
-        else:
-            print(f'Directory "{path}" does not exist. Exit.')
-            return False
-    return True
 
 
 def downbeat_time_to_index(beats, downbeats):

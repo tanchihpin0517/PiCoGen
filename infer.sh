@@ -6,6 +6,7 @@ input_url=""
 input_audio=""
 output_dir=""
 docker_image=""
+skip_exist=""
 
 # Parse command-line arguments
 while [[ $# -gt 0 ]]; do
@@ -29,6 +30,10 @@ while [[ $# -gt 0 ]]; do
             docker_image="$2"
             shift # past argument
             shift # past value
+            ;;
+        --skip_exist)
+            skip_exist="true"
+            shift # past argument
             ;;
         *)    # unknown option
             # If it's a command or another flag, break the loop
@@ -67,28 +72,40 @@ function run {
 if [ -z $docker_image ]; then
     # If input URL is provided, download the audio
     if [ -z "$input_audio" ]; then
-        echo "Downloading input audio from $input_url"
-        run pip install --upgrade yt-dlp > /dev/null 2>&1
-        run python -m picogen2 infer \
-            --stage download \
-            --input_url $input_url \
-            --output_dir $output_dir
+        if [ -f "$output_dir/song.mp3" ] && [ ! -z "$skip_exist" ]; then
+            echo "Skipping downloading input audio."
+        else
+            echo "Downloading input audio from $input_url"
+            run pip install --upgrade yt-dlp > /dev/null 2>&1
+            run python -m picogen2 infer \
+                --stage download \
+                --input_url $input_url \
+                --output_dir $output_dir
+        fi
         input_audio=$output_dir/song.mp3
     fi
 
     # Detect beats
-    echo "Extracting beat information from $input_audio ..."
-    run python -m picogen2 infer \
-        --stage beat \
-        --input_audio $input_audio \
-        --output_dir $output_dir
+    if [ -f "$output_dir/song_beat.json" ] && [ ! -z "$skip_exist" ]; then
+        echo "Skipping extracting beat information."
+    else
+        echo "Extracting beat information from $input_audio ..."
+        run python -m picogen2 infer \
+            --stage beat \
+            --input_audio $input_audio \
+            --output_dir $output_dir
+    fi
 
     # Extract features
-    echo "Extracting SheetSage features from $input_audio ..."
-    run python -m picogen2 infer \
-        --stage sheetsage \
-        --input_audio $input_audio \
-        --output_dir $output_dir
+    if [ -f "$output_dir/song_sheetsage.npz" ] && [ ! -z "$skip_exist" ]; then
+        echo "Skipping extracting SheetSage features."
+    else
+        echo "Extracting SheetSage features from $input_audio ..."
+        run python -m picogen2 infer \
+            --stage sheetsage \
+            --input_audio $input_audio \
+            --output_dir $output_dir
+    fi
 
     # Infer piano cover
     echo "Infering piano cover ..."

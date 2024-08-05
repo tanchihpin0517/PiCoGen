@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        display: flex;
+      }
+      nav {
+        width: 200px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background-color: #f8f9fa;
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        overflow-y: auto; /* Enable vertical scrolling */
+      }
+      nav ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      nav ul li {
+        margin: 10px 0;
+      }
+      nav ul li a {
+        text-decoration: none;
+        color: #007bff;
+      }
+      nav ul li a.active {
+        font-weight: bold;
+      }
+      .content {
+        margin-left: 220px; /* Adjust this value based on nav width */
+        padding: 20px;
+      }
+      section {
+        padding: 50px 0; /* Add some padding to sections for better visibility */
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="#section3">Section 3</a></li>
+        <li><a href="#section4">Section 4</a></li>
+        <li><a href="#section5">Section 5</a></li>
+        <li><a href="#section6">Section 6</a></li>
+        <li><a href="#section7">Section 7</a></li>
+        <li><a href="#section8">Section 8</a></li>
+        <li><a href="#section9">Section 9</a></li>
+        <li><a href="#section10">Section 10</a></li>
+        <li><a href="#section11">Section 11</a></li>
+        <li><a href="#section12">Section 12</a></li>
+        <li><a href="#section13">Section 13</a></li>
+        <li><a href="#section14">Section 14</a></li>
+        <li><a href="#section15">Section 15</a></li>
+        <li><a href="#section16">Section 16</a></li>
+        <li><a href="#section17">Section 17</a></li>
+        <li><a href="#section18">Section 18</a></li>
+        <li><a href="#section19">Section 19</a></li>
+      </ul>
+    </nav>
+    <div class="content">
+      <section id="section3">
+        <h1>3</h1>
+      </section>
+      <section id="section4">
+        <h1>4</h1>
+      </section>
+      <section id="section5">
+        <h1>5</h1>
+      </section>
+      <section id="section6">
+        <h1>6</h1>
+      </section>
+      <section id="section7">
+        <h1>7</h1>
+      </section>
+      <section id="section8">
+        <h1>8</h1>
+      </section>
+      <section id="section9">
+        <h1>9</h1>
+      </section>
+      <section id="section10">
+        <h1>10</h1>
+      </section>
+      <section id="section11">
+        <h1>11</h1>
+      </section>
+      <section id="section12">
+        <h1>12</h1>
+      </section>
+      <section id="section13">
+        <h1>13</h1>
+      </section>
+      <section id="section14">
+        <h1>14</h1>
+      </section>
+      <section id="section15">
+        <h1>15</h1>
+      </section>
+      <section id="section16">
+        <h1>16</h1>
+      </section>
+      <section id="section17">
+        <h1>17</h1>
+      </section>
+      <section id="section18">
+        <h1>18</h1>
+      </section>
+      <section id="section19">
+        <h1>19</h1>
+      </section>
+    </div>
+    <script>
+      // JavaScript to handle scroll and update active class
+      document.addEventListener("DOMContentLoaded", function () {
+        const sections = document.querySelectorAll("section");
+        const navLinks = document.querySelectorAll("nav ul li a");
+
+        window.addEventListener("scroll", function () {
+          let current = "";
+
+          sections.forEach((section) => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (pageYOffset >= sectionTop - sectionHeight / 3) {
+              current = section.getAttribute("id");
+            }
+          });
+
+          navLinks.forEach((link) => {
+            link.classList.remove("active");
+            if (link.getAttribute("href").includes(current)) {
+              link.classList.add("active");
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -31,7 +31,8 @@
     <meta name="keywords" content="KEYWORDS SHOULD BE PLACED HERE" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>PiCoGen</title>
+    <title>Academic Project Page</title>
+
     <link rel="icon" type="image/x-icon" href="static/images/favicon.ico" />
     <link
       href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
@@ -54,91 +55,150 @@
     <script src="static/js/bulma-carousel.min.js"></script>
     <script src="static/js/bulma-slider.min.js"></script>
     <script src="static/js/index.js"></script>
-  </head>
 
+    <style>
+      nav {
+        width: 300px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background-color: #f8f9fa;
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        overflow-y: auto; /* Enable vertical scrolling */
+      }
+      nav ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      nav ul li {
+        margin: 10px 0;
+      }
+      nav ul li a {
+        text-decoration: none;
+        color: #007bff;
+      }
+      nav ul li a.active {
+        font-weight: bold;
+      }
+      .content {
+        margin-left: 300px; /* Adjust this value based on nav width */
+        padding: 20px;
+      }
+      @media (max-width: 800px) {
+        nav {
+          transform: translateX(-100%);
+        }
+        nav.open {
+          transform: translateX(0);
+        }
+        .content {
+          margin-left: 0;
+        }
+        .menu-toggle {
+          display: block;
+        }
+      }
+
+      .nav_item {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .song-frame {
+        margin-left: 20px;
+      }
+
+      .song-row {
+        display: flex;
+        justify-content: center; /* Align horizontal */
+        align-items: center; /* Align vertical */
+      }
+
+      @media screen and (max-width: 100px) {
+        .song-column {
+          flex: 50%;
+        }
+      }
+
+      .bg_grey {
+        background-color: #f8f9fa;
+      }
+    </style>
+  </head>
   <body>
-    <section class="hero">
-      <div class="hero-body">
-        <div class="container is-max-desktop">
+    <nav>
+      <ul>
+        %nav_bar%
+      </ul>
+    </nav>
+
+    <section class="hero is-light">
+      <div class="hero-body content">
+        <div class="container is-max-desktop is-light">
           <div class="columns is-centered">
             <div class="column has-text-centered">
-              <h1 class="title is-1 publication-title">PiCoGen</h1>
-              <!-- <h1 class="title is-2 publication-title">Automatic Piano Cover Generation System</h1> -->
-
-              <div class="column has-text-centered">
-                <div class="publication-links">
-                  <!-- Github link -->
-                  <span class="link-block">
-                    <a
-                      href="https://github.com/tanchihpin0517/PiCoGen"
-                      target="_blank"
-                      class="external-link button is-normal is-rounded is-dark"
-                    >
-                      <span class="icon">
-                        <i class="fab fa-github"></i>
-                      </span>
-                      <span>Github</span>
-                    </a>
-                  </span>
-                </div>
-              </div>
-
-              <div class="is-size-5">
-                Portals:
-                <span class="author-block">
-                  <a href="picogen1.html" target="_blank">PiCoGen (v1)</a
-                  >,</span
-                >
-                <span class="author-block">
-                  <a href="picogen2.html" target="_blank">PiCoGen (v2)</a
-                  >,</span
-                >
-                <span class="author-block">
-                  <a href="examples.html" target="_blank">Examples</a>,</span
-                >
-              </div>
+              <h1 class="title is-1 publication-title">Examples</h1>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Paper abstract -->
-    <section class="section hero is-light">
-      <div class="container is-max-desktop">
-        <div class="columns is-centered has-text-centered">
-          <div class="column is-four-fifths">
-            <!-- <h2 class="title is-3">Introduction</h2> -->
-            <div class="content has-text-justified">
-              <p>
-                PiCoGen (<b>Pi</b>ano <b>Co</b>ver <b>Gen</b>eration) is an
-                academic project aimed at developing an automatic piano cover
-                generation system. The system takes a music audio input and
-                produces its cover version of the original piece. Current
-                PiCoGen has two versions: PiCoGen (v1) and PiCoGen2 (v2). The
-                first version employs a two-stage process, extracting the lead
-                sheet using SheetSage and generating the piano cover based on
-                the extracted lead sheet. The second version explores an
-                end-to-end approach to avoid potential information loss from the
-                two-stage process, which is observed in the previous version.
-                Both approaches demonstrate the ability to capture intermediate
-                musical features and generate piano covers effectively. Please
-                visit the respective pages for more details.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- End paper abstract -->
+    <div class="">%song_list%</div>
+
+    <!-- <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0"></script> -->
+    <script>
+      document.addEventListener(
+        "play",
+        function (e) {
+          var audios = document.getElementsByTagName("audio");
+
+          for (var i = 0, len = audios.length; i < len; i++) {
+            if (audios[i] != e.target) {
+              audios[i].pause();
+            }
+          }
+        },
+        true
+      );
+    </script>
+    <script>
+      // JavaScript to handle scroll and update active class
+      document.addEventListener("DOMContentLoaded", function () {
+        const sections = document.querySelectorAll("section");
+        const navLinks = document.querySelectorAll("nav ul li a");
+
+        window.addEventListener("scroll", function () {
+          let current = "";
+
+          sections.forEach((section) => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (pageYOffset >= sectionTop - sectionHeight / 3) {
+              current = section.getAttribute("id");
+            }
+          });
+
+          navLinks.forEach((link) => {
+            link.classList.remove("active");
+            if (link.getAttribute("href").includes(current)) {
+              link.classList.add("active");
+            }
+          });
+        });
+      });
+    </script>
 
     <footer class="footer">
       <div class="container">
-        <div class="columns is-centered">
-          <div class="column is-8">
+        <div class="is-centered">
+          <div class="is-8">
             <div class="content">
               <p>
-                This website is built from
+                This website is built with
                 <a
                   href="https://github.com/eliahuhorwitz/Academic-project-page-template"
                   target="_blank"

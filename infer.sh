@@ -60,73 +60,106 @@ if [ ! -d "$output_dir" ]; then
     fi
 fi
 
-docker_cmd=""
-docker_name="picogen2"
-docker_input_dir="/home/picogen2/docker_input"
-docker_output_dir="/home/picogen2/docker_output"
+function run {
+    $@ || exit 1
+}
 
-# Initialize Docker
-if [ ! -z "$docker_image" ]; then
-    echo "Run demo with Docker image: $docker_image"
-
-    if docker ps -q --filter "name=$docker_name" | grep -q .; then
-        echo "Container \`picogen2\` is already running"
-    else
-        docker run --runtime=nvidia --gpus all -it -d --name $docker_name $docker_image bash
+if [ -z $docker_image ]; then
+    # If input URL is provided, download the audio
+    if [ -z "$input_audio" ]; then
+        echo "Downloading input audio from $input_url"
+        run pip install --upgrade yt-dlp > /dev/null 2>&1
+        run python -m picogen2 infer \
+            --stage download \
+            --input_url $input_url \
+            --output_dir $output_dir
+        input_audio=$output_dir/song.mp3
     fi
 
-    docker_cmd="docker exec -it $docker_name conda run -n picogen2 --no-capture-output"
-    host_output_dir=$output_dir
-    output_dir=$docker_output_dir
+    # Detect beats
+    echo "Extracting beat information from $input_audio ..."
+    run python -m picogen2 infer \
+        --stage beat \
+        --input_audio $input_audio \
+        --output_dir $output_dir
 
-    $docker_cmd mkdir -p $output_dir
+    # Extract features
+    echo "Extracting SheetSage features from $input_audio ..."
+    run python -m picogen2 infer \
+        --stage sheetsage \
+        --input_audio $input_audio \
+        --output_dir $output_dir
+
+    # Infer piano cover
+    echo "Infering piano cover ..."
+    run python -m picogen2 infer \
+        --stage piano \
+        --input_audio $input_audio \
+        --output_dir $output_dir
+
+    exit 0
 fi
 
-function run {
-    if [ ! -z "$docker_cmd" ]; then
-        $docker_cmd $@ || exit 1
-        docker cp -q $docker_name:$output_dir/. $host_output_dir || exit 1
-    else
-        $@ || exit 1
-    fi
+# >>>>>>>>>>>>>>>>>>>>>> Docker <<<<<<<<<<<<<<<<<<<<<<<< #
+
+docker_name="picogen2"
+docker_cmd="docker exec -it $docker_name conda run -n picogen2 --no-capture-output"
+docker_output_dir="/home/picogen2/docker_output"
+
+echo "Run inference with Docker image: $docker_image"
+
+# Initialize Docker
+if docker ps -q --filter "name=$docker_name" | grep -q .; then
+    echo "Container \`picogen2\` is already running"
+else
+    docker run --runtime=nvidia --gpus all -it -d --name $docker_name $docker_image bash
+fi
+
+function docker_run {
+    run $docker_cmd $@
 }
+
+docker_run mkdir -p $docker_output_dir
 
 # If input URL is provided, download the audio
 if [ -z "$input_audio" ]; then
     echo "Downloading input audio from $input_url"
-    run pip install --upgrade yt-dlp > /dev/null 2>&1
-    run python -m picogen2 infer \
+    docker_run pip install --upgrade yt-dlp > /dev/null 2>&1
+    docker_run python -m picogen2 infer \
         --stage download \
         --input_url $input_url \
-        --output_dir $output_dir
-    input_audio=$output_dir/song.mp3
-# Elif input audio is provided and Docker image is specified, copy the audio to the Docker container
-elif [ ! -z "$docker_image" ]; then 
-    docker cp -q $input_audio $docker_name:$docker_input_dir/song.mp3
-    host_input_audio=$input_audio
-    input_audio=$docker_input_dir/song.mp3
+        --output_dir $docker_output_dir
+    docker cp -q $docker_name:$docker_output_dir/song.mp3 $output_dir/song.mp3
+else # copy the audio to the Docker container
+    docker cp -q $input_audio $docker_name:$docker_output_dir/song.mp3
 fi
+
+input_audio=$docker_output_dir/song.mp3
 
 # Detect beats
 echo "Extracting beat information from $input_audio ..."
-run python -m picogen2 infer \
+docker_run python -m picogen2 infer \
     --stage beat \
     --input_audio $input_audio \
-    --output_dir $output_dir
+    --output_dir $docker_output_dir
+docker cp -q $docker_name:$docker_output_dir/song_beat.json $output_dir/song_beat.json
 
 # Extract features
 echo "Extracting SheetSage features from $input_audio ..."
-run python -m picogen2 infer \
+docker_run python -m picogen2 infer \
     --stage sheetsage \
     --input_audio $input_audio \
-    --output_dir $output_dir
+    --output_dir $docker_output_dir
+docker cp -q $docker_name:$docker_output_dir/song_sheetsage.npz $output_dir/song_sheetsage.npz
 
 # Infer piano cover
 echo "Infering piano cover ..."
-run python -m picogen2 infer \
+docker_run python -m picogen2 infer \
     --stage piano \
     --input_audio $input_audio \
-    --output_dir $output_dir
+    --output_dir $docker_output_dir
+docker cp -q $docker_name:$docker_output_dir/piano.mid $output_dir/piano.mid
+docker cp -q $docker_name:$docker_output_dir/piano.txt $output_dir/piano.txt
 
 # Clean up
 if [ ! -z "$docker_image" ]; then

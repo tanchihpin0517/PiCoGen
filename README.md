@@ -9,7 +9,7 @@ You can run this model with [Docker](https://docs.docker.com/) or local environm
 * GPU with more than 16GB memory
 * `ffmpeg` installed
 
-### Get you hands-on
+### Quickstart
 You can reproduce the [demo]() just with these commands:
 ```sh
 mkdir ./demo_output/never_gonna_give_you_up

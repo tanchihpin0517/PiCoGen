@@ -6,6 +6,9 @@ from pathlib import Path
 import miditoolkit
 import numpy as np
 
+from . import assets
+from .utils import load_config
+
 DEFAULT_SUBBEAT_RANGE = np.arange(0, 64, dtype=int)
 DEFAULT_PIANO_RANGE = np.arange(21, 109, dtype=int)
 DEFAULT_VELOCITY_BINS = np.linspace(0, 124, 31 + 1, dtype=int)  # midi velocity: 0~127
@@ -105,7 +108,15 @@ class Event:
 
 
 class Tokenizer:
-    def __init__(self, vocab_file, beat_div, ticks_per_beat):
+    def __init__(self, vocab_file=None, beat_div=None, ticks_per_beat=None):
+        vocab_file = assets.vocab_file() if vocab_file is None else vocab_file
+
+        if beat_div is None or ticks_per_beat is None:
+            config_file = assets.config_file()
+            hp = load_config(config_file)
+            beat_div = hp.beat_div
+            ticks_per_beat = hp.ticks_per_beat
+
         self.vocab = Vocab(vocab_file)
         self.beat_div = beat_div
         self.ticks_per_beat = ticks_per_beat

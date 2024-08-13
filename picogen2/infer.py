@@ -10,8 +10,8 @@ from tqdm import tqdm
 
 from .data.download import ytdlp_download
 from .model import PiCoGenDecoder
-from .repr import Event, Tokenizer
-from .utils import downbeat_time_to_index, load_checkpoint, load_config, logger
+from .repr import Event
+from .utils import downbeat_time_to_index
 
 
 def download(input_url: str, output_file: Path):
@@ -40,46 +40,21 @@ def extract_sheetsage_feature(audio_file: Path, output_file: Path, beat_file: Pa
 
 
 @torch.no_grad()
-def picogen2(
-    beat_file,
-    sheetsage_file,
-    output_dir,
-    config_file,
-    vocab_file,
-    ckpt_file,
+def decode(
+    model,
+    tokenizer,
+    beat_information,
+    melody_last_embs,
+    harmony_last_embs,
     max_bar_num=None,
     max_token_num=None,
     temperature=1.0,
+    device=None,
 ):
-    if torch.cuda.is_available():
-        device = torch.device("cuda:0")
-    else:
-        device = torch.device("cpu")
+    if device is None:
+        device = model.parameters().__next__().device
 
-    assert output_dir.is_dir(), f"{output_dir} is not a directory"
-
-    logger.info(f"Loading model from {ckpt_file}")
-    hp = load_config(config_file)
-    model = PiCoGenDecoder(hp)
-    state_dict = load_checkpoint(ckpt_file, device)
-    model.load_state_dict(state_dict["model"])
-    model.eval()
-    model.to(device)
-    logger.info("Number of parameters: {}".format(sum(p.numel() for p in model.parameters())))
-
-    logger.info(f"Loading tokenizer from {vocab_file}")
-    tokenizer = Tokenizer(vocab_file, hp.beat_div, hp.ticks_per_beat)
-
-    logger.info(f"Loading beat information from {beat_file}")
-    beat_information = json.loads(beat_file.read_text())
     starting_bpm = 60 / np.diff(np.array(beat_information["beats"])[:2]).mean()
-
-    logger.info(f"Loading SheetSage's last hidden state from {sheetsage_file}")
-    sheetsage_last_hidden_state = np.load(sheetsage_file)
-    melody_last_embs = sheetsage_last_hidden_state["melody"]
-    harmony_last_embs = sheetsage_last_hidden_state["harmony"]
-
-    logger.info(f"Generating piano cover to {output_dir}/piano.mid ...")
 
     TARGET = PiCoGenDecoder.InputClass.TARGET.value
     CONDITION = PiCoGenDecoder.InputClass.CONDITION.value
@@ -166,6 +141,4 @@ def picogen2(
             break
 
     pbar.close()
-
-    (output_dir / "piano.txt").write_text("\n".join(map(str, out_events)))
-    tokenizer.events_to_midi(out_events).dump(output_dir / "piano.mid")
+    return out_events

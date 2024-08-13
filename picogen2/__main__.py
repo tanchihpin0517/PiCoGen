@@ -2,11 +2,14 @@ import argparse
 import json
 from pathlib import Path
 
+import numpy as np
 import questionary
+import torch
 
 from . import assets, infer
 from .data import download, preprocess
-from .repr import Vocab, gen_vocab
+from .model import PiCoGenDecoder
+from .repr import Tokenizer, Vocab, gen_vocab
 from .utils import logger
 
 
@@ -135,12 +138,15 @@ def command_infer(args):
             exit(1)
 
     if args.stage == "download":
+        logger.info(f"Downloading {args.input_url}")
         infer.download(args.input_url, args.output_dir / "song.mp3")
 
     if args.stage == "beat":
+        logger.info(f"Detecting beat for {args.input_audio}")
         infer.detect_beat(args.input_audio, args.output_dir / "song_beat.json")
 
     if args.stage == "sheetsage":
+        logger.info(f"Extracting SheetSage feature for {args.input_audio}")
         infer.extract_sheetsage_feature(
             args.input_audio,
             args.output_dir / "song_sheetsage.npz",
@@ -148,20 +154,46 @@ def command_infer(args):
         )
 
     if args.stage == "piano":
-        ckpt_file = assets.checkpoint_file() if args.ckpt_file is None else args.ckpt_file
-        config_file = assets.config_file() if args.config_file is None else args.config_file
-        vocab_file = assets.vocab_file() if args.vocab_file is None else args.vocab_file
+        assert args.output_dir.is_dir(), f"{args.output_dir} is not a directory"
 
-        infer.picogen2(
-            beat_file=args.output_dir / "song_beat.json",
-            sheetsage_file=args.output_dir / "song_sheetsage.npz",
-            output_dir=args.output_dir,
-            config_file=config_file,
-            vocab_file=vocab_file,
-            ckpt_file=ckpt_file,
+        if torch.cuda.is_available():
+            device = torch.device("cuda")
+        else:
+            device = torch.device("cpu")
+
+        ckpt_file = assets.checkpoint_file() if args.ckpt_file is None else args.ckpt_file
+        vocab_file = assets.vocab_file() if args.vocab_file is None else args.vocab_file
+        beat_file = args.output_dir / "song_beat.json"
+        sheetsage_file = args.output_dir / "song_sheetsage.npz"
+
+        logger.info(f"Loading model from {ckpt_file}")
+        model = PiCoGenDecoder.from_pretrained(device=device)
+        logger.info("Number of parameters: {}".format(sum(p.numel() for p in model.parameters())))
+
+        logger.info(f"Loading tokenizer from {vocab_file}")
+        tokenizer = Tokenizer()
+
+        logger.info(f"Loading beat information from {beat_file}")
+        beat_information = json.loads(beat_file.read_text())
+
+        logger.info(f"Loading SheetSage's last hidden state from {sheetsage_file}")
+        sheetsage_last_hidden_state = np.load(sheetsage_file)
+        melody_last_embs = sheetsage_last_hidden_state["melody"]
+        harmony_last_embs = sheetsage_last_hidden_state["harmony"]
+
+        logger.info("Generating piano cover")
+        out_events = infer.decode(
+            model=model,
+            tokenizer=tokenizer,
+            beat_information=beat_information,
+            melody_last_embs=melody_last_embs,
+            harmony_last_embs=harmony_last_embs,
             max_bar_num=args.max_bar_num,
             temperature=args.temperature,
         )
+
+        (args.output_dir / "piano.txt").write_text("\n".join(map(str, out_events)))
+        tokenizer.events_to_midi(out_events).dump(args.output_dir / "piano.mid")
 
 
 if __name__ == "__main__":

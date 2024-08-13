@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-cd $(dirname "$0")
-
 input_url=""
 input_audio=""
 output_dir=""

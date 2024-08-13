@@ -6,7 +6,8 @@ import torch.nn.functional as F
 from torch import nn
 from transformers import GPTNeoXConfig, GPTNeoXModel
 
-from .utils import top_p
+from . import assets
+from .utils import load_checkpoint, load_config, top_p
 
 
 def _get_device(module):
@@ -71,6 +72,22 @@ class PiCoGenDecoder(nn.Module):
             hp.token_class, hp.d_model, padding_idx=0
         )  # 0: target, 1: condition
         self.lm_head = nn.Linear(hp.d_model, hp.vocab_size)
+
+    @staticmethod
+    def from_pretrained(
+        ckpt_file=None,
+        config_file=None,
+        device="cpu",
+    ):
+        ckpt_file = ckpt_file if ckpt_file is not None else assets.checkpoint_file()
+        config_file = config_file if config_file is not None else assets.config_file()
+        hp = load_config(config_file)
+        model = PiCoGenDecoder(hp)
+        state_dict = load_checkpoint(ckpt_file, device)
+        model.load_state_dict(state_dict["model"])
+        model.to(device)
+        model.eval()
+        return model
 
     def generate(
         self, input_seg, input_cls_ids, need_encode, kv_cache=None, temperature=1.0, thres=0.9

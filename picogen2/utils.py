@@ -88,7 +88,7 @@ def load_config(config_file):
     return hp
 
 
-def load_checkpoint(filepath: Path, device):
+def load_checkpoint(filepath: Path, device="cpu"):
     assert filepath.is_file()
     logger.info("Loading '{}'".format(filepath))
     checkpoint_dict = torch.load(filepath, map_location=device, weights_only=False)

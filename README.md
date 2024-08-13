@@ -55,7 +55,48 @@ After these are settled down, you can also use the same script `infer.sh` to run
 
 
 ## Python interface
-We provide Python APIs for users who would like to run PiCoGen2 in their own Python codes. *The details are coming soon.*
+We provide Python APIs for users who would like to run PiCoGen2 in their own Python codes like this:
+```python
+import tempfile
+from pathlib import Path
+
+from mirtoolkit import beat_this, sheetsage
+
+import picogen2 # make sure picogen2 is installed
+import picogen2.assets # remove this if you don't use the default testing song
+
+def main():
+    audio_file = picogen2.assets.test_song() # input file
+    output_dir = tempfile.TemporaryDirectory() # output directory
+
+    # initialize
+    tokenizer = picogen2.Tokenizer()
+    model = picogen2.PiCoGenDecoder.from_pretrained(device="cuda")
+
+    # detect beats
+    beats, downbeats = beat_this.detect(audio_file)
+    beat_information = {"beats": beats.tolist(), "downbeats": downbeats.tolist()}
+
+    # extract feature
+    sheetsage_output = sheetsage.infer(audio_path=audio_file, beat_information=beat_information)
+
+    # generate piano cover
+    out_events = picogen2.decode(
+        model=model,
+        tokenizer=tokenizer,
+        beat_information=beat_information,
+        melody_last_embs=sheetsage_output["melody_last_hidden_state"],
+        harmony_last_embs=sheetsage_output["harmony_last_hidden_state"],
+    )
+
+    # save results
+    (Path(output_dir.name) / "piano.txt").write_text("\n".join(map(str, out_events)))
+    tokenizer.events_to_midi(out_events).dump(Path(output_dir.name) / "piano.mid")
+
+
+if __name__ == "__main__":
+    main()
+```
 
 ## Q & A
 > Can I run PiCoGen2 without GPU?

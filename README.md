@@ -101,3 +101,17 @@ if __name__ == "__main__":
 ## Q & A
 > Can I run PiCoGen2 without GPU?
 - Unfortunately, we still haven't implemented CPU version of PiCoGen2. Currently we don't have a plan for that but we welcome any contribution.
+
+
+
+## Citation
+```
+@inproceedings{tan2024picogen2,
+    author = {Tan, Chih-Pin and Ai, Hsin and Chang, Yi-Hsin and Guan, Shuen-Huei and Yang, Yi-Hsuan},
+    title = {PiCoGen2: Piano cover generation with transfer learning approach and weakly aligned data},
+    year = 2024,
+    month = nov,
+    booktitle = {Proceedings of the 25th International Society for Music Information Retrieval Conference (ISMIR)},
+    address = {San Francisco, CA, United States},
+}
+```

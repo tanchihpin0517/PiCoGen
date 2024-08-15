@@ -7,4 +7,4 @@ transformers
 pyrubberband
 synctoolbox
 miditoolkit
-mirtoolkit @ git+https://github.com/tanchihpin0517/mirtoolkit.git
+mirtoolkit @ git+https://github.com/tanchihpin0517/mirtoolkit.git@v0.1.0

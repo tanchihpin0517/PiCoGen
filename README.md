@@ -98,6 +98,9 @@ if __name__ == "__main__":
     main()
 ```
 
+## Training
+WIP
+
 ## Q & A
 > Can I run PiCoGen2 without GPU?
 - Unfortunately, we still haven't implemented CPU version of PiCoGen2. Currently we don't have a plan for that but we welcome any contribution.

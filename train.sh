@@ -16,17 +16,24 @@ shift
 
 case $command in
     "download")
-        conda run -n picogen2 --no-capture-output \
-            python -m picogen2 download \
+        python -m picogen2 download \
             --song_file ./assets/training_dataset.csv \
             --data_dir ./data/dataset \
             $@
         ;;
     "preprocess")
-        conda run -n picogen2 --no-capture-output \
-            python -m picogen2 preprocess \
+        python -m picogen2 preprocess \
             --data_dir ./data/dataset \
             --output_dir ./data/processed \
+            $@
+        ;;
+    "train")
+        python -m picogen2 train \
+            --config_file ./assets/config.json \
+            --checkpoint_path ./ckpt/default \
+            --dataset_dir ./data/dataset \
+            --processed_dir ./data/processed \
+            --vocab_file ./assets/vocab.json \
             $@
         ;;
     *)

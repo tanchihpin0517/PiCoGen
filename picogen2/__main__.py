@@ -73,6 +73,31 @@ def main():
     infer_parser.add_argument("--max_bar_num", type=int)
     infer_parser.add_argument("--temperature", type=float, default=1.0)
 
+    # Train
+    train_parser = subparsers.add_parser("train", help="Train PiCoGen2 model")
+    train_parser.set_defaults(func=command_train)
+    train_parser.add_argument("--config_file", type=Path)
+    train_parser.add_argument("--checkpoint_path", type=Path, required=True)
+    train_parser.add_argument("--dataset_dir", type=Path, required=True)
+    train_parser.add_argument("--processed_dir", type=Path, required=True)
+    train_parser.add_argument("--vocab_file", type=Path, required=True)
+    train_parser.add_argument("--loglevel", type=str, default="INFO")
+    train_parser.add_argument("--training_epochs", default=1000, type=int)
+    train_parser.add_argument("--training_steps", default=100000, type=int)
+    train_parser.add_argument("--batch_size", default=4, type=int)
+    train_parser.add_argument("--checkpoint_interval", default=2000, type=int)
+    train_parser.add_argument("--stdout_interval", default=1, type=int)
+    train_parser.add_argument("--summary_interval", default=100, type=int)
+    train_parser.add_argument("--validation_interval", default=1000, type=int)
+    train_parser.add_argument("--source_ckpt_file", type=Path)
+    train_parser.add_argument("--local_cache_dir", type=Path)
+    train_parser.add_argument("--num_gpus", default=1, type=int)
+    train_parser.add_argument("--cuda_device_id", default=0, type=int)
+    train_parser.add_argument("--dist_backend", default="nccl", type=str)
+    train_parser.add_argument("--dist_url", default="tcp://localhost:54321", type=str)
+    train_parser.add_argument("--world_size", default=1, type=int)
+    train_parser.add_argument("--debug", action="store_true")
+
     args = parser.parse_args()
     if hasattr(args, "loglevel"):
         logger.setLevel(args.loglevel)
@@ -194,6 +219,12 @@ def command_infer(args):
 
         (args.output_dir / "piano.txt").write_text("\n".join(map(str, out_events)))
         tokenizer.events_to_midi(out_events).dump(args.output_dir / "piano.mid")
+
+
+def command_train(args):
+    from .train import main as train_main
+
+    train_main(args)
 
 
 if __name__ == "__main__":

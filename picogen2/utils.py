@@ -1,10 +1,13 @@
 import json
 import logging
 import math
+import pickle
+import shutil
 from dataclasses import dataclass, fields
 from pathlib import Path
 
 import numpy as np
+import questionary
 import torch
 import torch.nn.functional as F
 
@@ -88,6 +91,41 @@ def load_config(config_file):
     return hp
 
 
+def init_ckpt_dir(ckpt_dir, config_file, config_name="config"):
+    t_path = (ckpt_dir / config_name).with_suffix(config_file.suffix)
+    if not t_path.exists():
+        ckpt_dir.mkdir(exist_ok=True)
+        shutil.copyfile(config_file, t_path)
+    else:
+        # check if config is the same
+        if config_file.read_text() != t_path.read_text():
+            override = questionary.confirm(
+                f'Config file "{config_file}" is not same with checkpoint "{t_path}", override?',
+                default=False,
+            ).ask()
+            if override:
+                shutil.copyfile(config_file, t_path)
+            else:
+                print("Confliction between config file and checkpoint. Exit.")
+                exit()
+                # raise ValueError(f'config file {config_file} and {t_path} are not the same')
+
+
+def save_checkpoint(filepath, obj, verbose=False):
+    print("Saving checkpoint to {} ... ".format(filepath), end="") if verbose else None
+    torch.save(obj, filepath)
+    print("Done.") if verbose else None
+
+
+def scan_checkpoint(cp_dir, prefix):
+    # pattern = os.path.join(cp_dir, prefix + '????????')
+    # cp_list = glob.glob(pattern)
+    cp_list = list(cp_dir.glob(f"{prefix}*"))
+    if len(cp_list) == 0:
+        return None
+    return sorted(cp_list, key=lambda n: int(n.stem.split("_")[-1]))[-1]
+
+
 def load_checkpoint(filepath: Path, device="cpu"):
     assert filepath.is_file()
     logger.info("Loading '{}'".format(filepath))
@@ -136,3 +174,21 @@ def normalize(audio, min_y=-1.0, max_y=1.0, eps=1e-6):
     amin = audio.min()
     audio = (max_y - min_y) * (audio - amin) / (amax - amin) + min_y
     return audio
+
+
+def pickle_load(file):
+    return pickle.load(open(file, "rb"))
+
+
+def pickle_save(data, file):
+    pickle.dump(data, open(file, "wb"))
+
+
+def get_downbeat_indices(beats, downbeats):
+    beats = np.array(beats)
+    downbeats = np.array(downbeats)
+    downbeat_indices = []
+    for downbeat in downbeats:
+        idx = np.argmin(np.abs(beats - downbeat))
+        downbeat_indices.append(idx)
+    return np.array(downbeat_indices)

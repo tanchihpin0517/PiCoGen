@@ -99,7 +99,7 @@ if __name__ == "__main__":
 ```
 
 ## Training
-WIP
+Please refer to [train.sh](https://github.com/tanchihpin0517/PiCoGen/blob/v2/train.sh), [train.py](https://github.com/tanchihpin0517/PiCoGen/blob/v2/picogen2/train.py), [preprocess.py](https://github.com/tanchihpin0517/PiCoGen/blob/v2/picogen2/data/preprocess.py), and [dataset.py](https://github.com/tanchihpin0517/PiCoGen/blob/v2/picogen2/data/dataset.py) to quicly get familiar with how to train the model.
 
 ## Q & A
 > Can I run PiCoGen2 without GPU?

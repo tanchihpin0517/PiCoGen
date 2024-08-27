@@ -6,7 +6,7 @@ from .utils import logger
 
 CACHE_DIR = Path.home() / ".cache" / "picogen2"
 
-URL_MODEL = "https://www.dropbox.com/scl/fi/6pjc9950zeex35wnrqn8c/model_ft_00070000?rlkey=ynt5oc6ju0lack9qoycuaaiel&st=e121yub0&dl=0"
+URL_MODEL = "https://zenodo.org/records/13380452/files/model_ft_00070000?download=1"
 URL_VOCAB = "https://raw.githubusercontent.com/tanchihpin0517/PiCoGen/v2/assets/vocab.json"
 URL_CONFIG = "https://raw.githubusercontent.com/tanchihpin0517/PiCoGen/v2/assets/config.json"
 URL_TEST_SONG = "https://www.dropbox.com/scl/fi/zj68yghtn0cwtwnqj7vrx/pop.00000.wav?rlkey=bejuh89wehbc8psl9ujmqa73u&st=kb265uvz&dl=0"

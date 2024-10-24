@@ -18,4 +18,4 @@ visit the respective pages for more details.
 
 ## Portals
 * PiCoGen (v1): [paper](https://arxiv.org/abs/2407.20883), [website](https://tanchihpin0517.github.io/PiCoGen/picogen1.html), [github](https://github.com/tanchihpin0517/PiCoGen/tree/v1)
-* PiCoGen2 (v2): [paper](), [website](https://tanchihpin0517.github.io/PiCoGen/picogen2.html), [github](https://github.com/tanchihpin0517/PiCoGen/tree/v2)
+* PiCoGen2 (v2): [paper](https://arxiv.org/abs/2408.01551), [website](https://tanchihpin0517.github.io/PiCoGen/picogen2.html), [github](https://github.com/tanchihpin0517/PiCoGen/tree/v2)

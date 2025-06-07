@@ -38,6 +38,10 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+processed/
+mirtoolkit/
+madmom/
+mirtoolkit_sheetsage/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -67,6 +71,7 @@ cover/
 # Translations
 *.mo
 *.pot
+*.pt
 
 # Django stuff:
 *.log

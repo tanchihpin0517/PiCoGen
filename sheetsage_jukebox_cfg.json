@@ -1,0 +1,19 @@
+{
+  "batch_size": 64,
+  "dataset": "0831_theorytab_beatframebased_jukebox_pitches",
+  "eval_frequency": 32,
+  "hacks": [
+    "pos_emb",
+    "4layers",
+    "octave_invariant_loss",
+    "pitch_class_loss"
+  ],
+  "lr": 0.0001,
+  "max_num_steps": null,
+  "model": "transformer",
+  "seed": 0,
+  "src": "0919_jukebox53_mean_beat",
+  "src_max_len": 384,
+  "summarize_frequency": 32,
+  "tgt_max_len": 384
+} 

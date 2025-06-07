@@ -40,6 +40,9 @@ def main():
             preprocess.TASK_BEAT,
             preprocess.TASK_SHEETSAGE,
             preprocess.TASK_ALIGN,
+            preprocess.TASK_VOCAL,
+            preprocess.TASK_MEL_CHROMA,
+            preprocess.TASK_MEL_CHROMA_VISUALIZE,
         ],
         help="Subtask of preprocessing",
     )

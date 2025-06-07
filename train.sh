@@ -16,13 +16,13 @@ shift
 
 case $command in
     "download")
-        python -m picogen2 download \
+        /home/zahar/.conda/envs/picogen/bin/python -m picogen download \
             --song_file ./assets/training_dataset.csv \
             --data_dir ./data/dataset \
             $@
         ;;
     "preprocess")
-        python -m picogen2 preprocess \
+        /home/zahar/.conda/envs/picogen2/bin/python -m picogen2 preprocess \
             --data_dir ./data/dataset \
             --output_dir ./data/processed \
             $@

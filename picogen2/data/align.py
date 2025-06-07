@@ -4,6 +4,7 @@ import os
 import subprocess
 import tempfile
 from pathlib import Path
+import logging
 
 import librosa
 import numpy as np
@@ -38,6 +39,13 @@ def save_delayed_song(
     piano_midi_file: Path,
     align_info_file: Path,
 ):
+    if not song_audio_file.exists():
+        logging.warn(f"Audio file {song_audio_file} does not exist, skipping.")
+        return
+    if not piano_midi_file.exists():
+        logging.warn(f"MIDI file {piano_midi_file} does not exist, skipping.")
+        return
+
     song_audio, _ = librosa.load(str(song_audio_file), sr=Fs)
     piano_midi = pretty_midi.PrettyMIDI(str(piano_midi_file))
 
@@ -107,6 +115,10 @@ def get_aligned_results(song_audio, piano_midi):
     DFs = 22050
 
     song_audio = normalize(song_audio)
+
+    # Очистка аудиомассива от NaN и inf
+    if not np.all(np.isfinite(song_audio)):
+        song_audio = np.nan_to_num(song_audio, nan=0.0, posinf=0.0, neginf=0.0)
 
     song_audio_downsampled = librosa.resample(song_audio, orig_sr=Fs, target_sr=DFs)
     piano_audio_downsampled = _fast_fluidsynth(piano_midi, DFs)
